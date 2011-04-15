@@ -24,12 +24,10 @@ Crafty.c("DataStore", {
 		
 		var d = this._data[type][id];
 		var new_entity = Crafty.e(d.components);
-		for comp in d.attr {
+		for (comp in d.attr) {
 			new_entity.attr(d.attr[i]);
 		}
 		
 		return new_entity;
 	},
-	
-	
 });
