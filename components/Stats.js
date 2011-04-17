@@ -2,7 +2,7 @@
 	Crafty.c("Stats", {
 		_basestats: new Object(),
 		stats: new Object(),
-		combat: new Object(),
+		
 		init: function() {
 		},
 		
@@ -13,6 +13,14 @@
 		get_stat_raw: function(stat) {
 			return this.stats[stat];
 		},
+		
+		// semi constants
+		PHYS: 'physical'
+		FIRE: 'fire',
+		ICE: 'ice',
+		LIGHT: 'lightning',
+		WIND: 'wind',
+		RST: '_resist',
 		
 		set_stat: function(stat, value) {
 			this.stats[stat] = value;
@@ -42,12 +50,5 @@
 				}
 			}
 		},
-		
-		level_up: function() {
-			// get new xp requirement
-			
-			this._basestats.level += 1;
-			// add stats based on growth formula
-		}
 	});
 });
