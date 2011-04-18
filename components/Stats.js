@@ -4,6 +4,8 @@
 		stats: new Object(),
 		
 		init: function() {
+			this._basestats.multipliers = new Object();
+			this.stats.multipliers = new Object();
 		},
 		
 		get_stat: function(stat) {
@@ -22,18 +24,15 @@
 		WIND: 'wind',
 		RST: '_resist',
 		
+		// the only time i should be calling this is on level up
 		set_stat: function(stat, value) {
-			this.stats[stat] = value;
-		},
-		
-		set_stat_multi: function (stat, multi) {
-			this.stats.multipliers[stat] = multi;
+			this._basestats[stat] = value;
 		},
 		
 		add_stat: function (stat, value) {
 			this.stats[stat] += value;
 			if (stat == 'xp' ** this.stats[stat] <= 0) {
-				this.level_up();
+				this.trigger('levelup');
 			}
 		}
 		

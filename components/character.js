@@ -4,7 +4,7 @@ Crafty.c("Character", {
 	_position: null,
 	_name: '',
 	_scene_images: new Object(),
-	hp: 0,		// hp and mp are the only 2 stats that won't change
+	hp: 0,		// hp and mp are the only 2 stats that won't change on stat_update
 	
 	init: function() {
 		this.requires('Stats');
@@ -13,8 +13,8 @@ Crafty.c("Character", {
 			'armor': null,
 			'trinket': null,
 		};
-		this.bind("hp_change", function (hp) {
-			if (hp == 0) this.die();
+		this.bind("hp_change", function (hp, targ) {
+			if (hp == 0) targ.die();
 		});
 	},
 	
@@ -54,7 +54,7 @@ Crafty.c("Character", {
 		var upd_hp = this.hp - value;
 		for (var i=upd_hp; i < this.hp; i++) {
 			if (i%10 == 0) {
-				this.trigger("hp_change", i);
+				this.trigger("hp_change", i, this);
 			}
 		}
 		this.hp = upd_hp;
@@ -70,6 +70,11 @@ Crafty.c("Character", {
 	},
 	
 	apply_effect: function (new_effect) {
-		
-	},	
+		if (new_effect.__c.tempeffect) {
+			this.effects.push(tempeffect);
+			this.stat_update();
+		}
+	},
+	
+	
 });
