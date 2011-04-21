@@ -1,29 +1,47 @@
 (function(Crafty, window, document) {
 	Crafty.c("LevelsUp", {
 		_tendencies: {
-			hp: function () { return 0; },
-			mp: function () { return 0; },
-			atk: function () { return 0; },
-			def: function () { return 0; },
+			xp: function () { return 0; },
 		},
+		_xp: 0,
 		
 		init: function() {
-			this.requires("Character");
-			this.bind('levelup', function () {
-				this.level_up();
+			this.requires('Stats');
+			this.bind('LevelUp', function () {
+				this.levelUp();
 			}
 		},
 		
-		growth_for: function (stat, level) {
+		setGrowthFormula: function (stat, callback) {
+			this._tendencies[stat] = callback;
+		}
+		
+		growthFor: function (stat, level) {
 			 return this._tendencies[stat](level);
 		},
 		
-		level_up: function() {
+		levelUp: function() {
 			var next = this._basestat.level+1;
-			this.set_stat('hp', this.growth_for('hp', next));
-			this.set_stat('mp', this.growth_for('mp', next));
-			this.set_stat('atk', this.growth_for('atk', next));
-			this.set_stat('def', this.growth_for('def', next));
+			var growth = {
+				level: 1,
+			};
+			for (stat in this._tendencies) {
+				if (stat == 'xp') continue;
+				growth[stat] = this._tendencies[stat](next);
+			}
+			
+			this._xp = this.growthFor('xp', next) - this._xp;
+			
+			this.trigger('StatGrowth', growth);
+			
+			this.addXP(0); // check for multiple levels in one fight
+		},
+		
+		addXP: function(points) {
+			this._xp -= points;
+			if (this._xp <= 0) {
+				this.trigger('LevelUp');
+			}
 		}
 	});
 });

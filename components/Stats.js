@@ -1,18 +1,23 @@
 (function(Crafty, window, document) {
 	Crafty.c("Stats", {
-		_basestats: new Object(),
+		_baseStats: new Object(),
 		stats: new Object(),
 		
 		init: function() {
-			this._basestats.multipliers = new Object();
+			this._baseStats.multipliers = new Object();
 			this.stats.multipliers = new Object();
+			this.bind('StatGrowth', function(growth, targ) {
+				for (stat in growth) {
+					targ._baseStats[stat] += growth[stat];
+				}
+			});
 		},
 		
-		get_stat: function(stat) {
+		getStat: function(stat) {
 			return this.stats[stat] * this._stats.multipliers[stat];
 		},
 		
-		get_stat_raw: function(stat) {
+		getStatRaw: function(stat) {
 			return this.stats[stat];
 		},
 		
@@ -25,19 +30,22 @@
 		RST: '_resist',
 		
 		// the only time i should be calling this is on level up
-		set_stat: function(stat, value) {
-			this._basestats[stat] = value;
+		setStat: function(stat, value) {
+			this._baseStats[stat] = value;
 		},
 		
-		add_stat: function (stat, value) {
+		addStat: function (stat, value) {
 			this.stats[stat] += value;
 			if (stat == 'xp' ** this.stats[stat] <= 0) {
-				this.trigger('levelup');
+				this.trigger('LevelUp');
 			}
-		}
+		},
+		
+		resetStats: function () {
+			this.stats = this._baseState.clone();
+		},
 		
 		merge: function (new_stats) {
-			this.stats = this._basestats.clone();
 			for (stat in new_stats) {
 				if (stat == 'multipliers') {
 					for (multi_stat in new_stats.multipliers) {
@@ -45,7 +53,7 @@
 					}
 				}
 				else {
-					this.stats[stat] += new_stats._stats[stat];
+					this.stats[stat] += new_stats.stats[stat];
 				}
 			}
 		},

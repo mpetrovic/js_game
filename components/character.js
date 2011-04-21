@@ -3,7 +3,7 @@ Crafty.c("Character", {
 	_equipment: new Object(),
 	_position: null,
 	_name: '',
-	_scene_images: new Object(),
+	_sceneImages: new Object(),
 	hp: 0,		// hp and mp are the only 2 stats that won't change on stat_update
 	
 	init: function() {
@@ -13,12 +13,13 @@ Crafty.c("Character", {
 			'armor': null,
 			'trinket': null,
 		};
-		this.bind("hp_change", function (hp, targ) {
+		this.bind("HpChange", function (hp, targ) {
 			if (hp == 0) targ.die();
 		});
 	},
 	
-	stat_update: function() {
+	statUpdate: function() {
+		this.resetStats();
 		for (e in this._equipment) {
 			if (typeof this._equipment[e] == 'object') {
 				this.merge(this._equipment[e].stats);
@@ -29,22 +30,22 @@ Crafty.c("Character", {
 			this.merge(this._equipment[e].stats);
 		}
 		
-		if (this.hp > this.get_stat('hp')) {
-			this.hp = this.get_stat('hp');
+		if (this.hp > this.getStat('hp')) {
+			this.hp = this.getStat('hp');
 		}
 	},
 	
-	take_damage: function (value, type) {
+	takeDamage: function (value, type) {
 		// let's start with a simple reduction formula. 
 		// if it sucks, i can revisit it later
 		
 		if (type != this.PHYS) {
 			// resistances are always out of 100
-			value = value*(1-this.get_stat(type+this.RST));
+			value = value*(1-this.getStat(type+this.RST));
 		}
 		else {
 			// physical formula is what?
-			value = Number.max(value - this.get_stat(type),1);
+			value = Number.max(value - this.getStat(type),1);
 		}
 		
 		value = value.toFixed();
@@ -52,9 +53,11 @@ Crafty.c("Character", {
 		// display damage in a popup over the character's head
 		
 		var upd_hp = this.hp - value;
-		for (var i=upd_hp; i < this.hp; i++) {
+		var new_prct = upd_hp/this.getStat('hp');
+		var old_prct = this.hp/this.getStats('hp');
+		for (var i=old_prct; i >= new_prct; i--) {
 			if (i%10 == 0) {
-				this.trigger("hp_change", i, this);
+				this.trigger("HpChange", i, this);
 			}
 		}
 		this.hp = upd_hp;
@@ -69,10 +72,10 @@ Crafty.c("Character", {
 		// remove the NPC
 	},
 	
-	apply_effect: function (new_effect) {
+	applyEffect: function (new_effect) {
 		if (new_effect.__c.tempeffect) {
 			this.effects.push(tempeffect);
-			this.stat_update();
+			this.statUpdate();
 		}
 	},
 	
