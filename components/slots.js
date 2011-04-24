@@ -18,7 +18,7 @@
 			this._slots[slot_num] = upgrade;
 		},
 		
-		get_cumulative: function() {
+		getCumulative: function() {
 			var stats = Crafty.e("Stats");
 			
 			for (var i=0; i<this._slotsMax; i++) {
