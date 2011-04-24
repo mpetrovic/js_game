@@ -1,6 +1,6 @@
 (function (Crafty, window, document) {
 	Crafty.c("Slots", function () {
-		_slots_max: 4,
+		_slotsMax: 4,
 		_slots: new Array(),
 		
 		init: function() {
@@ -21,7 +21,7 @@
 		get_cumulative: function() {
 			var stats = Crafty.e("Stats");
 			
-			for (var i=0; i<this._slots_max; i++) {
+			for (var i=0; i<this._slotsMax; i++) {
 				stats.merge(this._slots[i]);
 			}
 			
