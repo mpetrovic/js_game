@@ -60,7 +60,7 @@ Crafty.c("Character", {
 				this.trigger("HpChange", i, this);
 			}
 		}
-		this.hp = upd_hp;
+		this.hp = Number.max(upd_hp,0);
 		
 		// play hit animation
 		// update ui elements
