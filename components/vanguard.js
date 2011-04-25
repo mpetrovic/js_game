@@ -40,6 +40,7 @@
 			});
 			
 			// AnimationEnd handler
+			// the attack is over. reset attack related vars
 			this.bind("AnimationEnd", function() {
 				this._currentAttack = false;
 				this._target = false;
