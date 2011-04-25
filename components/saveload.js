@@ -15,7 +15,7 @@
 				else if (openDatabase) {
 					this.saveSql();
 				}
-				else if (window.globalStorage) {
+				else if (window.localStorage) {
 					this.saveStorage()
 				}
 				else {
@@ -33,7 +33,7 @@
 				else if (openDatabase) {
 					this.loadSql();
 				}
-				else if (window.globalStorage) {
+				else if (window.localStorage) {
 					this.loadStorage()
 				}
 				else {
