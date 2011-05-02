@@ -1,5 +1,5 @@
 (function (Crafty, window, document) {
-	Crafty.c("SaveLoad", function() {
+	Crafty.c("SaveLoad", {
 		saveName: '',			// machine name for the save. 
 								// either gameName_save_01 OR gameName_userName_save_01
 		db: NULL,

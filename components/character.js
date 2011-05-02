@@ -9,16 +9,16 @@ Crafty.c("Character", {
 	init: function() {
 		this.requires('Stats');
 		this._equipment = {
-			'weapon': null,
-			'armor': null,
-			'trinket': null,
+			weapon: null,
+			armor: null,
+			trinket: null,
 		};
 		this.bind("HpChange", function (hp, targ) {
 			if (hp == 0) targ.die();
 		});
 		
 		this.bind("SaveData", function (data) {
-			data.equipment = this.equipment.clone();
+			data.equipment = this._equipment.clone();
 			data.position = this.position;
 			data.name = this.name;
 			data.hp = this.hp;

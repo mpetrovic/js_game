@@ -1,5 +1,5 @@
 (function (Crafty, document, window) {
-	Crafty.c("Vanguard", function() {
+	Crafty.c("Vanguard", {
 		attackGauge: 0,			// in frames
 		attackGaugeMax: 100,	// also in frames
 		_attackGaugeIncrease: 0	// amount the gauge increases per frame

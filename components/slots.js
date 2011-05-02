@@ -1,5 +1,5 @@
 (function (Crafty, window, document) {
-	Crafty.c("Slots", function () {
+	Crafty.c("Slots", {
 		_slotsMax: 4,
 		_slots: new Array(),
 		
