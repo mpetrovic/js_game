@@ -2,24 +2,26 @@
 	Crafty.c("SaveLoad", function() {
 		saveName: '',			// machine name for the save. 
 								// either gameName_save_01 OR gameName_userName_save_01
+		db: NULL,
 		
 		init: function() {
 			// determine which save solution we'll be using.
 			this.bind("SaveGame", function() {
-				if (this.saveOnline()) {
+				var data = this._getSaveData();
+				if (this.saveOnline(data)) {
 					// do nothing
 				}
 				else if (window.indexedDB) {
-					this.saveIndexed();
+					this.saveIndexed(data);
 				}
 				else if (openDatabase) {
-					this.saveSql();
+					this.saveSql(data);
 				}
 				else if (window.localStorage) {
-					this.saveStorage()
+					this.saveStorage(data)
 				}
 				else {
-					window.saveCookies();
+					window.saveCookies(data);
 				}
 			});
 			
@@ -43,14 +45,28 @@
 		},
 		
 		// gets all the data a component is saving
-		_getSaveData() {
-			var data = {};
-			this.trigger("SaveData", data);
+		getSaveData() {
+			var data = {
+				c: this.__c,
+				a: {},
+			};
+			this.trigger("SaveData", data.a);
 			return data;
 		},
 		
 		// in order of things I will try
 		saveIndexed: function() {
+			if (this.db == NULL) {
+				this.db = {};
+				var request = window.indexDB.open("ArTonelico_CellianNights", "Saved Data for Ar Tonelico: Cellian Nights");
+				request.onsuccess = function(event) {
+					this.db.database = event.result;
+					var request2 = this.db.database.setVersion(1);
+					request2.onsuccess = function(e) {
+						this.db.store = this.db.database.createObjectStore("GameSaves", "id", false);
+					};
+				};
+			}
 		},
 		loadIndexed: function() {
 		},

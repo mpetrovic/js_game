@@ -13,7 +13,7 @@
 		_target: false,
 		
 		init: function() {
-			this.attacks = {};
+			this._attacks = {};
 			
 			// enterFrame handler
 			this.bind("enterFrame", function () {
@@ -26,7 +26,8 @@
 						if (attack.hits[data.frame]) {
 							// each attack can hit multiple times.
 							// either for elemental damage or for Hits++
-							var hits = this.getAttackDamage();
+							
+							var hits = this.getAttackDamages(attackDamage);
 							for (var i=0; i<hits.length; i++) {
 								this._target.takeDamage(hits[i].amount, hits[i].type);
 							}
@@ -44,6 +45,7 @@
 			this.bind("AnimationEnd", function() {
 				this._currentAttack = false;
 				this._target = false;
+				this._num_hits = {};
 			});
 		},
 		
@@ -52,8 +54,32 @@
 			
 			this._currentAttack = atkName;
 			this._target = target;
+			
+			// calculate damage now so we don't do it on every frame. 
+			var types = {};
+			types[this.PHYS] = this.getStat('numHits');
+			types[this.FIRE] = this.getStat('fireDmg');
+			types[this.ICE] = this.getStat('iceDmg');
+			types[this.LIGHT] = this.getStat('lightDmg');
+			types[this.WIND] = this.getStat('windDmg');
+			
+			var attackDamage = this.getStat('attack');
+			attackDamage = Math.round(attackDamage*0.75 + Math.random()*(attackDamage*0.5));
+			
+			
+			
 			if (this.has('SpriteAnimation')) {
 				this.animate(atkName, this._attacks[atkName].length);
+			}
+		},
+		
+		getAttackDamage: function() {
+			
+			var attack = this.getStat('attack');
+			var damage = attack; // apply a function here
+			var damage = new Array();
+			for (type in num_hits) {
+				// these values should be integers. We divide by 4 to get the % of total attack damage these things do
 			}
 		},
 	});

@@ -22,7 +22,7 @@
 			var stats = Crafty.e("Stats");
 			
 			for (var i=0; i<this._slotsMax; i++) {
-				stats.merge(this._slots[i]);
+				if (this._slots[i]) stats.merge(this._slots[i]);
 			}
 			
 			return stats;
