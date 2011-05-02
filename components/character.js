@@ -1,7 +1,7 @@
 Crafty.c("Character", {
 	_effects: new Array(),
 	equipment: new Object(),
-	position: null,
+	position: 0,
 	name: '',
 	_sceneImages: new Object(),
 	hp: 0,		// hp and mp are the only 2 stats that won't change on stat_update
