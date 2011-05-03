@@ -5,6 +5,7 @@ Crafty.c("Character", {
 	name: '',
 	_sceneImages: new Object(),
 	hp: 0,		// hp and mp are the only 2 stats that won't change on stat_update
+	_damageDisplay: null,
 	
 	init: function() {
 		this.requires('Stats');
@@ -23,6 +24,10 @@ Crafty.c("Character", {
 			data.name = this.name;
 			data.hp = this.hp;
 		},
+		
+		this._damageDisplay = Crafty.e("Interface");
+		this.attach(this._damageDisplay);
+		if (this.has('persist')) this._damageDisplay.addComponent('persist');
 	},
 	
 	statUpdate: function() {
@@ -70,7 +75,10 @@ Crafty.c("Character", {
 		this.hp = Number.max(upd_hp,0);
 		
 		// play hit animation
+		this.animate("Hit", 1);
+		
 		// update ui elements
+		Crafty.trigger("UpdateInterface", this);
 	},
 	
 	die: function() {
