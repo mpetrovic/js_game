@@ -58,4 +58,4 @@
 			}
 		},
 	});
-});
+})(Crafty,window,window.document);

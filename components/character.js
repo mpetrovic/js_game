@@ -87,4 +87,4 @@ Crafty.c("Character", {
 	},
 	
 	
-});
+})(Crafty,window,window.document);

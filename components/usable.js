@@ -13,4 +13,4 @@
 			// which means this function will need to be named differently.
 		},
 	});
-});
+})(Crafty,window,window.document);

@@ -28,4 +28,4 @@
 			return stats;
 		}
 	});
-});
+})(Crafty,window,window.document);

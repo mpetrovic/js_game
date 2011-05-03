@@ -83,4 +83,4 @@
 			}
 		},
 	});
-});
+})(Crafty,window,window.document);

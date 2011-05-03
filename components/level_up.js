@@ -44,4 +44,4 @@
 			}
 		}
 	});
-});
+})(Crafty,window,window.document);

@@ -45,4 +45,4 @@
 			this.unbind('EnterFrame');
 		},
 	});
-});
+})(Crafty,window,window.document);
