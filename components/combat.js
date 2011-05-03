@@ -11,6 +11,7 @@
 			onVictory: [],
 			onDefeat: [],
 		},
+		_uiElements: {},
 		
 		placeEnemies: function(enemy1, enemy2, enemy3, enemy4) {
 			this._enemyPositions[1] = enemy1;
@@ -32,19 +33,20 @@
 			for (i=0; i<st.length; i++) {
 				st.call(this);
 			}
-			this.bind("EnterFrame", this.enterFrame);
+			this.bind("enterFrame", this.enterFrame);
 			this.bind("KeyPress", this.keyPress);
 		},
 		
 		endCombat: function() {
-			
+			this.unbind("enterFrame", this.enterFrame);
+			this.unbind("KeyPress", this.keyPress);
 		},
 		
 		enterFrame: function () {
 			var i=1, l=this._allyPositions.length+1;
 			for (; i<l; i++) {
-				if (this._allyPositions[i] && !this._allyPositions[i].isPlaying()) this._allyPositions[i].animate('idle', 0, -1);
-				if (this._enemyPositions[i] && !this._enemyPositions[i].isPlaying()) this._enemyPositions[i].animate('idle', 0, -1);
+				if (this._allyPositions[i] && !this._allyPositions[i].isPlaying()) this._allyPositions[i].animate('idle', 1, -1);
+				if (this._enemyPositions[i] && !this._enemyPositions[i].isPlaying()) this._enemyPositions[i].animate('idle', 1, -1);
 			}
 		},
 		
