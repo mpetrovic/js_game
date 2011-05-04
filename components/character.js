@@ -23,11 +23,7 @@ Crafty.c("Character", {
 			data.position = this.position;
 			data.name = this.name;
 			data.hp = this.hp;
-		},
-		
-		this._damageDisplay = Crafty.e("Interface");
-		this.attach(this._damageDisplay);
-		if (this.has('persist')) this._damageDisplay.addComponent('persist');
+		});
 	},
 	
 	statUpdate: function() {
@@ -63,6 +59,8 @@ Crafty.c("Character", {
 		value = value.toFixed();
 		
 		// display damage in a popup over the character's head
+		if (this._damageDisplay)
+			this._damageDisplay.addDamage(value,type);
 		
 		var upd_hp = this.hp - value;
 		var new_prct = upd_hp/this.getStat('hp');
@@ -77,8 +75,9 @@ Crafty.c("Character", {
 		// play hit animation
 		this.animate("Hit", 1);
 		
-		// update ui elements
-		Crafty.trigger("UpdateInterface", this);
+		// alert interface elements
+		Crafty.trigger('InterfaceUpdate', this);
+		
 	},
 	
 	die: function() {
@@ -94,5 +93,26 @@ Crafty.c("Character", {
 		}
 	},
 	
+	createDamageReadout: function () {
+		var dmgDisp = Crafty.e("Interface");
+		this.attach(dmgDisp);
+		if (this.has('persist')) dmgDisp.addComponent('persist');
+		dmgDisp.setup(function() {
+			this.reset = function() {
+				this._element.innerHTML = '';
+			}
+			this.addDamage = function(num, type) {
+				var sign = (num>0)?'+':'';
+				this._element.innerHTML += '<div class="dmg '+sign+type+'">'+num+'</div>';
+				this._data.counter = 15;
+			}
+		});
+		dmgDisp.handler(function() {
+			if (this._data.counter-- == 0) {
+				this.reset();
+			}
+		});
+		this._damageDisplay = dmpDisp;
+	}
 	
 })(Crafty,window,window.document);
