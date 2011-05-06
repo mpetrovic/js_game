@@ -17,13 +17,13 @@
 		sing: function() {
 			Crafty.trigger("StartSinging", this);
 			this.bind('EnterFrame', function () {
-				if (this.tickCurrent == 0) {
-					this._tickLength = this._tickCurrent;
+				if (this._tickCurrent == 0) {
+					this._tickCurrent = this._tickLength;
 					this.tick();
 				}
 				
 				this.burst += Number.floor(this.bps/Crafty.getFPS());
-				this._tickLength--;
+				this._tickCurrent--;
 			});
 		},
 		
