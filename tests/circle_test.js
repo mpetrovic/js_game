@@ -11,5 +11,7 @@
 		Crafty.scene('test', function() {
 			circle.animate("spin");
 		});
+		
+		Crafty.scene('test');
 	}
 })(Crafty, window, window.document)
