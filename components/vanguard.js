@@ -13,6 +13,8 @@
 		_target: false,
 		
 		init: function() {
+			this.requires('Character');
+			
 			this._attacks = {};
 			
 			// enterFrame handler
@@ -27,7 +29,8 @@
 							// each attack can hit multiple times.
 							// either for elemental damage or for Hits++
 							
-							var hits = this.getAttackDamages(attackDamage);
+							var hits = this.getAttackDamages();
+							this._target.createDamageReadout();
 							for (var i=0; i<hits.length; i++) {
 								this._target.takeDamage(hits[i].amount, hits[i].type);
 							}
@@ -56,6 +59,23 @@
 			this._target = target;
 			
 			// calculate damage now so we don't do it on every frame. 
+			
+			var attackDamage = this.getStat('attack');
+			attackDamage = Math.round(attackDamage*0.75 + Math.random()*(attackDamage*0.5));
+			
+			// calculate damage here so it's consistent across an attack
+			
+			if (this.has('SpriteAnimation')) {
+				this.animate(atkName, this._attacks[atkName].length);
+			}
+		},
+		
+		getAttackHits: function(damage) {
+			
+			var attack = this.getStat('attack');
+			var damage = attack; // apply a function here
+			var damage = new Array();
+			
 			var types = {};
 			types[this.PHYS] = this.getStat('numHits');
 			types[this.FIRE] = this.getStat('fireDmg');
@@ -63,23 +83,9 @@
 			types[this.LIGHT] = this.getStat('lightDmg');
 			types[this.WIND] = this.getStat('windDmg');
 			
-			var attackDamage = this.getStat('attack');
-			attackDamage = Math.round(attackDamage*0.75 + Math.random()*(attackDamage*0.5));
-			
-			
-			
-			if (this.has('SpriteAnimation')) {
-				this.animate(atkName, this._attacks[atkName].length);
-			}
-		},
-		
-		getAttackDamage: function() {
-			
-			var attack = this.getStat('attack');
-			var damage = attack; // apply a function here
-			var damage = new Array();
-			for (type in num_hits) {
-				// these values should be integers. We divide by 4 to get the % of total attack damage these things do
+			for (type in types) {
+				// these values should be integers. We divide by 5 to get the % of total attack damage these things do
+				
 			}
 		},
 	});

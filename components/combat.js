@@ -37,6 +37,7 @@
 						this._data.bar = this.getFirstOfClass('interface_hp_bar').getChildAt(0);
 						this._data.diff = this.getFirstOfClass('interface_hp_bar').getChildAt(1);
 						this._data.counter = 0;
+						
 					}, characters[i]);
 					
 					new_elem.addHandler(function() {
@@ -44,6 +45,10 @@
 						var ui_hp = this._data.number.innerHTML.split('/')[0];
 						this._data.counter--;
 						if (ui_hp != this._data.character.hp) {
+							if (this._data.reduceByFrame == 0) {
+								// this is the first time the hp bar is being updated since the diff bar went away
+								this._data.reduceByFrame = Math.abs(this._data.character.hp - ui_hp)/15;	// 15 frames to bring the bar down
+							}
 							if (ui_hp > this._data.character.hp) {
 								// dmg taken
 								ui_hp -= this._data.reducePerFrame;
@@ -51,6 +56,7 @@
 							}
 							else if (ui_hp < this._data.character.hp) {
 								// healing
+								ui_hp += this._data.reducePerFrame;
 								this._data.diff.style.backgroundColor = "#00FF33";
 							}
 							this._data.number.innerHTML = ui_hp+'/'+this._data.character.getStat('hp');
@@ -65,6 +71,7 @@
 							if (this._data.counter == 0) {
 								this._data.diff.style.backgroundColor = "transparent";
 								this._data.diff.style.width = "0%";
+								this._data.reduceByFrame = 0;
 							}
 						}
 					});
