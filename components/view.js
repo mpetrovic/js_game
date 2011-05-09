@@ -7,11 +7,13 @@
 (function (Crafty, window, document) {
 	Crafty.c("View", {
 		name: '',
-		_elements: [],
+		_elements: null,
 		_hasInit: false,
-		_transitions: {},
+		_transitions: null,
 		
 		init: function () {
+			this._elements = [];
+			this._transitions = {};
 			this.requires('2D, DOM, Tween, persist');
 			this.attr({x: 0, y:0, h: '100%', w:'100%');
 		},

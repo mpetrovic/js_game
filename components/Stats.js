@@ -1,11 +1,16 @@
 (function(Crafty, window, document) {
 	Crafty.c("Stats", {
-		_baseStats: new Object(),
-		stats: new Object(),
+		_baseStats: null,
+		stats: null,
 		
 		init: function() {
-			this._baseStats.multipliers = new Object();
-			this.stats.multipliers = new Object();
+			this._baseStats = {
+				multipliers: {},
+			};
+			this.stats = {
+				multipliers: {},
+			};
+		
 			this.bind('StatGrowth', function(growth, targ) {
 				for (stat in growth) {
 					targ._baseStats[stat] += growth[stat];

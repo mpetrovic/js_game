@@ -1,19 +1,21 @@
 Crafty.c("Character", {
-	_effects: new Array(),
-	equipment: new Object(),
+	_effects: null,
+	equipment: null,
 	position: 0,
 	name: '',
-	_sceneImages: new Object(),
+	_sceneImages: null,
 	hp: 0,		// hp and mp are the only 2 stats that won't change on stat_update
 	_damageDisplay: null,
 	
 	init: function() {
 		this.requires('Stats');
-		this._equipment = {
+		this._effects = [];
+		this.equipment = {
 			weapon: null,
 			armor: null,
 			trinket: null,
 		};
+		this._sceneImages = {};
 		this.bind("HpChange", function (hp, targ) {
 			if (hp == 0) targ.die();
 		});

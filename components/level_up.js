@@ -1,12 +1,13 @@
 (function(Crafty, window, document) {
 	Crafty.c("LevelsUp", {
-		_tendencies: {
-			xp: function () { return 0; },
-		},
+		_tendencies: null,
 		_xp: 0,
 		
 		init: function() {
 			this.requires('Stats');
+			this._tendencies = {
+				xp: function () { return 0; },
+			};
 			this.bind('LevelUp', function () {
 				this.levelUp();
 			}

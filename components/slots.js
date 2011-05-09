@@ -1,7 +1,7 @@
 (function (Crafty, window, document) {
 	Crafty.c("Slots", {
 		_slotsMax: 4,
-		_slots: new Array(),
+		_slots: null,
 		
 		init: function() {
 			this._slots = new Array(null, null, null, null);
