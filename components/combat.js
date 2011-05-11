@@ -93,7 +93,7 @@
 		if (ui_hp != this._data.character.hp) {
 			if (this._data.reduceByFrame == 0) {
 				// this is the first time the hp bar is being updated since the diff bar went away
-				this._data.reduceByFrame = Math.abs(this._data.character.hp - ui_hp)/15;	// 15 frames to bring the bar down
+				this._data.reduceByFrame = Math.abs(this._data.character.hp - ui_hp)/(Crafty.FPS * 1.5);	// 1.5 seconds to bring the bar down
 			}
 			if (ui_hp > this._data.character.hp) {
 				// dmg taken
@@ -113,7 +113,7 @@
 			var bar = Crafty.getHueScale('#0000FF', '#FF0000', new_prct/100);
 			this._data.bar.style.backgroundColor = 'rgb('+bar[0]+','+bar[1]+','+bar[2]+')';
 			this._data.diff.style.width = (parseInt(this._data.diff.style.width)+diff)+'%';
-			this._data.counter = Crafty.FPS*1.5; 	// number of frames diff bar is visible
+			this._data.counter = Crafty.FPS*0.5; 	// number of frames diff bar is visible
 		}
 		else {
 			this._data.reduceByFrame = 0;
