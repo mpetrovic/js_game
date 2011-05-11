@@ -1,10 +1,8 @@
 (function(Crafty, window, document) {
-	Crafty.c("DataStore", {
-		_url: '',
-		_data: new Object(),
-		
-		init: function() {
-		},
+	var data = {};
+	
+	Crafty.extend({
+		_externalURL: '',
 		
 		prepare: function(type, id, url) {
 			if (!url) var url = this._url;
@@ -23,13 +21,16 @@
 				return;
 			}
 			
-			var d = this._data[type][id];
+			var d = data[type][id];
 			var new_entity = Crafty.e(d.components);
 			for (comp in d.attr) {
 				new_entity.attr(d.attr[i]);
 			}
 			
 			return new_entity;
+		},
+		
+		loading: function() {
 		},
 	});
 });
