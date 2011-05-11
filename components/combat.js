@@ -9,6 +9,13 @@
 		_callbacks: null,
 		_uiElements: null,
 		
+		// Every 10 seconds, the passage resets. The indicators are rebuilt and reset to 0,
+		// and the song will evolve at this point. Players can push how long this passage time is out.
+		// There needs to be a reason to do so.
+		_passageLeft: 0,
+		_indicatorsMaximum: null,
+		_indicatorsCurrent: null,
+		
 		init: function () {
 			this._allyPositions = [];
 			this._enemyPositions = [];
@@ -19,6 +26,19 @@
 				onDefeat: [],
 			};
 			this._uiElements = {};
+			
+			this._indicatorsMaximum = {
+				harmonics: 0,
+				rage: 0,
+				synchro: 0,
+				defend: 0,
+			};
+			this._indicatorsCurrent = {
+				harmonics: 0,
+				rage: 0,
+				synchro: 0,
+				defend: 0,
+			};
 		},
 		
 		placeEnemies: function(enemy1, enemy2, enemy3, enemy4) {
