@@ -6,6 +6,7 @@ Crafty.c("Character", {
 	_sceneImages: null,
 	hp: 0,		// hp and mp are the only 2 stats that won't change on stat_update
 	_damageDisplay: null,
+	_partner: null,			// only for player's team
 	
 	init: function() {
 		this.requires('Stats');
@@ -26,6 +27,8 @@ Crafty.c("Character", {
 			data.name = this.name;
 			data.hp = this.hp;
 		});
+		
+		this.bind('GainEffect', this.applyEffect);
 	},
 	
 	statUpdate: function() {
@@ -62,7 +65,7 @@ Crafty.c("Character", {
 		
 		// display damage in a popup over the character's head
 		if (this._damageDisplay)
-			this._damageDisplay.addDamage(value,type);
+			this.createDamageReadout(value,type);
 		
 		var upd_hp = this.hp - value;
 		var new_prct = upd_hp/this.getStat('hp');
@@ -79,6 +82,7 @@ Crafty.c("Character", {
 		
 		// alert interface elements
 		Crafty.trigger('InterfaceUpdate', this);
+		Crafty.trigger('TakeDamage', this, value, type);
 		
 	},
 	
@@ -96,7 +100,7 @@ Crafty.c("Character", {
 	},
 	
 	createDamageReadout: function () {
-		var dmgDisp = Crafty.e("Interface");
+		var dmgDisp = Crafty.e("Interface Tween");
 		this.attach(dmgDisp);
 		if (this.has('persist')) dmgDisp.addComponent('persist');
 		dmgDisp.setup(function() {
@@ -106,7 +110,7 @@ Crafty.c("Character", {
 			this.addDamage = function(num, type) {
 				var sign = (num>0)?'+':'';
 				this._element.innerHTML += '<div class="dmg '+sign+type+'">'+num+'</div>';
-				this._data.counter = 15;
+				this._data.counter = 35;
 			}
 		});
 		dmgDisp.handler(function() {

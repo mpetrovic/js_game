@@ -16,7 +16,10 @@
 		_indicatorsMaximum: null,
 		_indicatorsCurrent: null,
 		
+		_currentSong: null,
+		
 		init: function () {
+			this.requires('Controls');
 			this._allyPositions = [];
 			this._enemyPositions = [];
 			
@@ -73,13 +76,37 @@
 			for (i=0; i<st.length; i++) {
 				st.call(this);
 			}
-			this.bind("enterFrame", this.enterFrame);
-			this.bind("KeyPress", this.keyPress);
+			this.bind("enterframe", this.enterFrame);
+			this.bind("KeyDown", this.keyPress);
+			this.bind('StartSinging', this.songStart);
+			this.bind('ReleaseSong', this.releaseSong);
+			this.bind('Tick', this.handleTicks);
+			this.trigger('CombatStart');
 		},
 		
 		endCombat: function() {
-			this.unbind("enterFrame", this.enterFrame);
-			this.unbind("KeyPress", this.keyPress);
+			this.unbind("enterframe", this.enterFrame);
+			this.unbind("KeyDown", this.keyPress);
+			this.unbind('StartSinging', this.songStart);
+			this.unbind('ReleaseSong', this.releaseSong);
+			this.unbind('Tick', this.handleTicks);
+		},
+		
+		songStart: function(song) {
+			this._currentSong = song;
+			this._currentSong.sing();
+			// draw song graphics
+		},
+		
+		releaseSong: function(song) {
+			// play and handle attack animation
+			
+			// apply song effects
+			
+			this._currentSong = null;
+		},
+		
+		handleTicks: function (tickStuff) {
 		},
 		
 		enterFrame: function () {
@@ -90,7 +117,54 @@
 			}
 		},
 		
-		keyPress: function () {
+		keyPress: function (e) {
+			var dir_mod = -1;
+			if (this.isDown('LEFT_ARROW')) {
+				dir_mod = 0;
+			}
+			else if (this.isDown('UP_ARROW')) {
+				dir_mod = 1;
+			}
+			else if (this.isDown('RIGHT_ARROW')) {
+				dir_mod = 2;
+			}
+			else if (this.isDown('DOWN_ARROW')) {
+				dir_mod = 3;
+			}
+			
+			if (e.key == 65 || e.key == 83) {
+				// vanguard is attacking			
+				// figure out a target based on the current targeting scheme.
+				// default scheme is highest absolute health.
+			
+				if (dir_mod == -1) dir_mod = 0;
+				var target = null;	
+			}
+			switch (e.key) {
+				case Crafty.keys.A:
+					// back vanguard action
+					this._allyPosition[1].attack(dir_mod, target);
+				break;
+				case Crafty.keys.S:
+					// front vanguard action
+					this._allyPosition[2].attack(dir_mod, target);
+				break;
+				case Crafty.keys.D:
+					// song action
+					if (this._currentSong == null || dir_mod != -1) {
+						this.switchSong(dir_mod);
+					}
+					else {
+						this._currentSong.release();
+					}
+				break;
+				case Crafty.keys.A:
+					// options screen
+				break;
+				default:
+					// do nothing. stop pressing random keys!
+				break;
+			}
 		},
 	});
 	

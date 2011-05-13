@@ -6,7 +6,10 @@
 		_harmoLevel: 0,
 		
 		init: function() {
-			this.songAvailable = {};
+			this.songAvailable = {
+				red: null,
+				blue: null,
+			};
 			this.talkTopics = {};
 		},
 	});
