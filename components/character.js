@@ -6,7 +6,7 @@ Crafty.c("Character", {
 	_sceneImages: null,
 	hp: 0,		// hp and mp are the only 2 stats that won't change on stat_update
 	_damageDisplay: null,
-	_partner: null,			// only for player's team
+	partner: null,			// only for player's team
 	
 	init: function() {
 		this.requires('Stats');

@@ -71,6 +71,10 @@
 					}
 				}
 			}
+			this.allyPositions[1]._partner = this._allyPositions[3];
+			this.allyPositions[2]._partner = this._allyPositions[4];
+			this.allyPositions[3]._partner = this._allyPositions[1];
+			this.allyPositions[4]._partner = this._allyPositions[2];
 			
 			var st = this._callbacks.onStart;
 			for (i=0; i<st.length; i++) {
