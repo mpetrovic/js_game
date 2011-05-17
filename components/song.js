@@ -9,9 +9,6 @@
 		bps: 0				// burst per second
 		
 		init: function() {
-			this.burst = 0;
-			this.level = 1;
-			this._tickCurrent = 0;
 		},
 		
 		sing: function() {

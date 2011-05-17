@@ -21,15 +21,17 @@
 			this.bind('activateView', this.activate);
 			this.bind('dismissView', this.deactivate);
 			
-			this.oldTrigger = this.trigger;
-			this.trigger = function(event, data) {
-				if ('_isActive' in this && this._isActive) {
-					this.oldTrigger(event, data);
-				}
-			};
+			this.transition('fadeIn', {
+				duration: 0.5*Crafty.getFPS(),
+				fadeTo: '#000000',
+				fromDir: 'in',
+				effect: 'fade',
+				type: 'appear',
+			});
 		},
 		
 		activate: function() {
+			if (this._isActive) return;
 			if ('start' in this) {
 				this.start();
 			}
@@ -40,6 +42,7 @@
 		},
 		
 		deactivate: function() {
+			if (!this._isActive) return;
 			if ('stop' in this) {
 				this.stop();
 			}
@@ -50,12 +53,12 @@
 			// not using entities for these internal elements
 			if (!tag) tag = 'div';
 			var elem = document.createElement(tag);
-			document.className = className;
-			document.style.position = 'absolute';
-			document.style.top = y+'px';
-			document.style.left = x+'px';
-			document.style.width = w+'px';
-			document.style.height = h+'px';
+			elem.className = className;
+			elem.style.position = 'absolute';
+			elem.style.top = y+'px';
+			elem.style.left = x+'px';
+			elem.style.width = w+'px';
+			elem.style.height = h+'px';
 			
 			this._childElements.push(elem);
 			this._element.addChild(elem);
@@ -81,6 +84,7 @@
 				transData = this._transitions[trans];
 				switch (transData.type) {
 					case 'appear':
+						if (!this._element.parentNode) Crafty.stage.inner.addChild(this._element);
 						this.tween({x: 0, y:0}, transData.duration);
 						
 						this.delay(function() (
@@ -94,23 +98,49 @@
 				}
 			}
 			else if (arguments.length == 2) {
-				var off = {};
-				switch (transData.fromDir) {
-					'left':	'Left':	'LEFT':	'l': 'L':
-						off = {x: -1 * this.w, y:0};
-					break;
-					'right': 'Right': 'RIGHT': 'r': 'R':
-						off = {x: this.w, y:0};
-					break;
-					'top': 'Top': 'TOP': 't': 'T':
-						off = {x: 0, y: -1 * this.h};
-					break;
-					'bottom': 'Bottom': 'BOTTOM': 'b': 'B':
-						off = {x: 0, y: this.h};
-					break;
+				switch (transData.effect) {
+				case 'slide':
+					var off = {};
+					switch (transData.fromDir) {
+						'left':	'Left':	'LEFT':	'l': 'L':
+							off = {x: -1 * this.w, y:0};
+						break;
+						'right': 'Right': 'RIGHT': 'r': 'R':
+							off = {x: this.w, y:0};
+						break;
+						'top': 'Top': 'TOP': 't': 'T':
+							off = {x: 0, y: -1 * this.h};
+						break;
+						'bottom': 'Bottom': 'BOTTOM': 'b': 'B':
+							off = {x: 0, y: this.h};
+						break;
+					}
+					transData.func = function (args) {
+						this.tween.apply(args);
+					};
+					transData.argsOff = [off, transData.duration];
+					transData.argsOn = [{x: 0, y: 0}, transData.duration];
+					this.attr(transData.argsOff[0]);
+				break;
+				case 'fade':
+					var overlay_elem = document.createElement('div');
+					this._element.addChild(overlay_elem);
+					var overlay = Crafty.e('2D DOM Color Tween persist')
+										.DOM(overlay_elem)
+										.color(transData.fadeTo);
+					if (transData.type == 'appear') {
+						transData.func = function () {
+							overlay.tween({alpha: 0.0}, transData.duration);
+						}
+					}
+					else if (transData.type == 'disappear') {
+						transData.func = function () {
+							overlay.tween({alpha: 1.0}, transData.duration);
+							this.delay(function () { this.undraw(); }, transData.duration);
+						}
+					}
+				break;
 				}
-				transData.offScreen = off;
-				this.attr(off);
 				this._transitions[trans] = transData;
 			}
 			return this;
