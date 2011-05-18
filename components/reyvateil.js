@@ -2,6 +2,7 @@
 	Crafty.c("Reyvateil", {
 		songAvailable: null,
 		talkTopics: null,
+		mp: 0,
 		
 		_harmoLevel: 0,
 		
