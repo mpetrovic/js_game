@@ -1,16 +1,21 @@
 (function(Crafty, window, document) {
+	var xpTable = [];
+
 	Crafty.c("LevelsUp", {
 		_tendencies: null,
+		_level: 1,
 		_xp: 0,
 		
 		init: function() {
-			this.requires('Stats');
 			this._tendencies = {
-				xp: function () { return 0; },
+				xp: function (next) { return xpTable[next]; },
 			};
-			this.bind('LevelUp', function () {
-				this.levelUp();
-			}
+			this.bind('AddXp', function (xp) {
+				this._xp -= xp;
+				if (this._xp <= 0) {
+					this.levelUp();
+				}
+			});
 		},
 		
 		setGrowthFormula: function (stat, callback) {
@@ -22,27 +27,24 @@
 		},
 		
 		levelUp: function() {
-			var next = this._basestat.level+1;
+			var next = this._level+1;
 			var growth = {
 				level: 1,
 			};
-			for (stat in this._tendencies) {
+			for (var stat in this._tendencies) {
 				if (stat == 'xp') continue;
 				growth[stat] = this._tendencies[stat](next);
 			}
 			
-			this._xp = this.growthFor('xp', next) - this._xp;
+			// we go into this function with either a 0 or negative XP value
+			// growthFor returns a positive int that we want to reduce.
+			this._xp = this.growthFor('xp', next) + this._xp;
 			
 			this.trigger('StatGrowth', growth);
 			
-			this.addXP(0); // check for multiple levels in one fight
-		},
-		
-		addXP: function(points) {
-			this._xp -= points;
 			if (this._xp <= 0) {
-				this.trigger('LevelUp');
+				this.levelUp();
 			}
-		}
+		},
 	});
 })(Crafty,window,window.document);

@@ -26,10 +26,13 @@
 			this._tickCurrent--;
 		},
 		
+		compileIdleAnimation: function () {
+		},
+		
 		/**
 		 * This function is gonna be awful...
 		 */
-		compileAnimation: function () {
+		compileAttackAnimation: function () {
 		}
 		
 		levelUp: function() {
