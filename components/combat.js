@@ -97,8 +97,15 @@
 		},
 		
 		songStart: function(song) {
+			var old_song = this._currentSong, reyv1 = this._allyPositions[3], reyv2 = this._allyPositions[4];
+		
 			this._currentSong = song;
-			this._currentSong.sing();
+			this._currentSong.attr({
+				attack: reyv1.attr('attack') + reyv2.attr('attack'),
+				burst: old_song.attr('burst') * (((reyv1.attr('burstReduc') + reyv2.attr('burstReduc'))/2)/100),
+				bps: old_song.attr('bps'),
+			}).sing();
+			old_song.stopSinging();
 			// draw song graphics
 		},
 		

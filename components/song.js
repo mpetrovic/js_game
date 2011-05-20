@@ -6,7 +6,8 @@
 		_tickCurrent: 0,
 		_tickLength: 10*Crafty.getFPS(),
 		type: 'red', 		// red or blue
-		bps: 0				// burst per second
+		bps: 0,				// burst per second
+		attack: 0,			// sum of caster attacks
 		
 		init: function() {
 		},
@@ -14,6 +15,8 @@
 		sing: function() {
 			Crafty.trigger("StartSinging", this);
 			this.bind('enterframe', this.step);
+			
+			return this;
 		},
 		
 		step: function () {
@@ -49,9 +52,17 @@
 			return new Array();
 		},
 		
+		stopSinging: function () {
+			this.bps = 0;
+			this.level = 1;
+			this.burst = 0;
+			return this.unbind('enterframe', this.step);
+		},
+		
 		release: function() {
-			this.unbind('enterframe', this.step);
 			Crafty.trigger('ReleaseSong', this);
+			
+			return this.stopSinging();
 		},
 	});
 })(Crafty,window,window.document);

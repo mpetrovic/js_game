@@ -1,10 +1,13 @@
 (function(Crafty, window, document) {
-	var xpTable = [];
+	var xpTable = {};
 
 	Crafty.c("LevelsUp", {
 		_tendencies: null,
 		_level: 1,
 		_xp: 0,
+		// public versions.
+		level: 1,
+		xp: 0,
 		
 		init: function() {
 			this._tendencies = {
@@ -15,6 +18,7 @@
 				if (this._xp <= 0) {
 					this.levelUp();
 				}
+				this.xp = this._xp;
 			});
 		},
 		
@@ -40,6 +44,9 @@
 			// growthFor returns a positive int that we want to reduce.
 			this._xp = this.growthFor('xp', next) + this._xp;
 			
+			this.xp = this._xp;
+			this.level = this._level;
+			
 			this.trigger('StatGrowth', growth);
 			
 			if (this._xp <= 0) {
@@ -47,4 +54,8 @@
 			}
 		},
 	});
+	
+	function addXpTableEntry(type, level, value) {
+		xpTable[type][level] = value;
+	}
 })(Crafty,window,window.document);
