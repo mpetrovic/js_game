@@ -3,6 +3,14 @@
  * It's for cases when we switch to a different scene, but then come back to the old one
  * For instance, games in which the combat is separate from the exploration.
  * We'll want to switch to combat, but then go right back where we were in exploration
+
+ * Flow:
+ * User calls Crafty.view('viewName', 'transition') to call the View forward. 
+ * Once transition has been completed, it fires 'ActivateView'.
+ * To dismiss a View, they call Crafty.view('viewName', 'transition') which will do the same.
+ * Except, the View will fire 'DismissView' before running the transition.
+
+ * This is not implemented yet. It's the plan though.
 */
 (function (Crafty, window, document) {
 	Crafty.c("View", {
