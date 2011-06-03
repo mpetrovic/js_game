@@ -9,6 +9,15 @@
  * Once transition has been completed, it fires 'ActivateView'.
  * To dismiss a View, they call Crafty.view('viewName', 'transition') which will do the same.
  * Except, the View will fire 'DismissView' before running the transition.
+ 
+ * View.transition() is used to define and call transitions. 
+ * It has 3 forms:
+ * Definition:
+ *   transition(name, function, in|out)
+ *   transition(name, {in: function, out: function})
+ * Calling:
+ *   transition(name)
+ 
 
  * This is not implemented yet. It's the plan though.
 */
@@ -25,17 +34,6 @@
 			this._transitions = {};
 			this.requires('2D, DOM, Tween, persist');
 			this.attr({x: 0, y:0, h: Crafty.DOM.window.height, w:Crafty.DOM.window.width});
-			
-			this.bind('activateView', this.activate);
-			this.bind('dismissView', this.deactivate);
-			
-			this.transition('fadeIn', {
-				duration: 0.5*Crafty.getFPS(),
-				fadeTo: '#000000',
-				fromDir: 'in',
-				effect: 'fade',
-				type: 'appear',
-			});
 		},
 		
 		activate: function() {
@@ -81,31 +79,80 @@
 		},
 		
 		/*
-		 * transData takes the following properties:
-		 *	type: 'appear' || 'disappear'. Whether the view is coming or going
-		 * 	fromDir: which way the the view comes from
-		 * 	duration: how long the transition lasts
+		 * View.transition() is used to define and call transitions. 
+		 * It has 3 forms:
+		 * Definition:
+		 *   transition(name, function, in|out)
+		 *   transition(name, {in: function, out: function})
+		 * Calling:
+		 *   transition(name)
 		 */
-		transition: function(trans, transData) {
+		transition: function(trans) {
+			var dir;
 			if (arguments.length == 1) {
 				// we're calling the transition
-				transData = this._transitions[trans];
-				switch (transData.type) {
-					case 'appear':
-						if (!this._element.parentNode) Crafty.stage.inner.addChild(this._element);
-						this.tween({x: 0, y:0}, transData.duration);
-						
-						this.delay(function() (
-							this.trigger('activateView');
-						), (transData.duration/Crafty.FPS)*1000);
-					break;
-					case 'disappear':
-						this.tween(transData.offScreen, transData.duration);
-						this.trigger('dismissView');
-					break;
-				}
+				dir = this._isActive?'out':'in';
+				if (this._isActive) Crafty.trigger('DismissView', this);
+				this._transitions[trans][dir].call(this);
+				if (!this._isActive) Crafty.trigger('ActivateView', this);
+				this._isActive = !this._isActive;
 			}
 			else if (arguments.length == 2) {
+				this._transitions[trans] = arguments[1];
+			}
+			else if (arguments.length == 3) {
+				dir = arguments[2].toLowerCase();
+				this._transitions[trans][dir] = arguments[1];
+			}
+			return this;
+		},
+	});
+	
+	Crafty.extend({
+		_views: {},
+		_activeView: [],
+		
+		/*
+		 * Calls a new view to the top of the stack.
+		 * Each view needs to clear itself.
+		 */
+		view: function (view_id, view_obj) {
+			Crafty.scene('noScene');
+			if (typeof view_obj == 'object') {
+				if (view_obj.has && !view_obj.has('View') {
+					var new_view = Crafty.e("View");
+					new_view.extend(view_obj);
+				}
+				else {
+					new_view = view_obj;
+				}
+				if ('create' in new_view) {
+					new_view.create.call(new_view);
+				}
+				this._views[view_id] = new_view;
+			}
+			else if (typeof view_obj == 'string') {
+				this._active.push(view_id);
+				for (var i=0; i<this._activeView.length; i++) {
+					this._views[this._activeView[i]].attr({z: i+5});
+				}
+				this._views[view_id].transition(view_obj);
+			}
+			else if (typeof view_obj == 'undefined') {
+				this._views[view_id].trigger('activateView');
+			}
+		},
+	});
+	
+	Crafty.scene('noScene', function() {
+	});
+	
+	Crafty.bind('dismissView', function () {
+		this._views[this._activeView.pop()];
+	});
+	
+	/*
+	if (arguments.length == 2) {
 				switch (transData.effect) {
 				case 'slide':
 					var off = {};
@@ -150,46 +197,5 @@
 				break;
 				}
 				this._transitions[trans] = transData;
-			}
-			return this;
-		},
-	});
-	
-	Crafty.extend({
-		_views: {},
-		_activeView: [],
-		
-		/*
-		 * Calls a new view to the top of the stack.
-		 * Each view needs to clear itself.
-		 */
-		view: function (view_id, view_obj) {
-			Crafty.scene('noScene');
-			if (typeof view_obj == 'object') {
-				var new_view = Crafty.e("View");
-				new_view.extend(view_obj);
-				if ('create' in new_view) {
-					new_view.create.call(new_view);
-				}
-				this._views[view_id] = new_view;
-			}
-			else if (typeof view_obj == 'string') {
-				this._active.push(view_id);
-				for (var i=0; i<this._activeView.length; i++) {
-					this._views[this._activeView[i]].attr({z: i+5});
-				}
-				this._views[view_id].transition(view_obj);
-			}
-			else if (typeof view_obj == 'undefined') {
-				this._views[view_id].trigger('activateView');
-			}
-		},
-	});
-	
-	Crafty.scene('noScene', function() {
-	});
-	
-	Crafty.bind('dismissView', function () {
-		this._views[this._activeView.pop()].attr({z: 0});
-	});
+	*/
 })(Crafty, window, window.document);

@@ -1,8 +1,9 @@
 (function (Crafty, window, document) {
-	Crafty.c("SaveLoad", {
+	var db = NULL, url = '',;
+	
+	Crafty.c("Save", {
 		saveName: '',			// machine name for the save. 
 								// either gameName_save_01 OR gameName_userName_save_01
-		db: NULL,
 		
 		init: function() {
 			// determine which save solution we'll be using.
@@ -26,21 +27,7 @@
 			});
 			
 			this.bind("LoadGame", function() {
-				if (this.loadOnline()) {
-					// do nothing
-				}
-				else if (window.indexedDB) {
-					this.loadIndexed();
-				}
-				else if (openDatabase) {
-					this.loadSql();
-				}
-				else if (window.localStorage) {
-					this.loadStorage()
-				}
-				else {
-					window.loadCookies();
-				}
+				
 			});
 		},
 		
@@ -56,14 +43,14 @@
 		
 		// in order of things I will try
 		saveIndexed: function() {
-			if (this.db == NULL) {
-				this.db = {};
+			if (db == NULL) {
+				db = {};
 				var request = window.indexDB.open("ArTonelico_CellianNights", "Saved Data for Ar Tonelico: Cellian Nights");
 				request.onsuccess = function(event) {
-					this.db.database = event.result;
+					db.database = event.result;
 					var request2 = this.db.database.setVersion(1);
 					request2.onsuccess = function(e) {
-						this.db.store = this.db.database.createObjectStore("GameSaves", "id", false);
+						db.store = this.db.database.createObjectStore("GameSaves", "id", false);
 					};
 				};
 			}
@@ -95,4 +82,46 @@
 		loadOnline: function() {
 		},
 	});
+	
+	Crafty.extend({
+		setSaveGameURL: function (new_url) {
+			// check the URL works
+			if (1) {
+				url = new_url;
+			}
+		},
+		
+		loadFromSave: function (saveName) {
+			if (loadOnline(saveName)) {
+				// do nothing
+			}
+			else if (window.indexedDB) {
+				loadIndexed(saveName);
+			}
+			else if (openDatabase) {
+				loadSql(saveName);
+			}
+			else if (window.localStorage) {
+				loadStorage(saveName)
+			}
+			else {
+				loadCookies(saveName);
+			}
+		},
+	});
+	
+	function loadOnline(saveName) {
+	}
+	
+	function loadIndexed(saveName) {
+	}
+	
+	function loadSql(saveName) {
+	}
+	
+	function loadStorage(saveName) {
+	}
+	
+	function loadCookies(saveName) {
+	}
 });

@@ -73,7 +73,7 @@
 		gaugeFromDamage: function(unit, value, type) {
 			if (unit != this) continue;
 			
-			this.b
+			
 		},
 		
 		/**
