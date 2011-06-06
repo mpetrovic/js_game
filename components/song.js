@@ -4,7 +4,7 @@
 		level: 0,
 		MD: 0,
 		_tickCurrent: 0,
-		_tickLength: 10*Crafty..timer.getFPS(),
+		_tickLength: 10*Crafty.timer.getFPS(),
 		type: 'red', 		// red or blue
 		bps: 0,				// burst per second
 		attack: 0,			// sum of caster attacks
