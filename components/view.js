@@ -42,8 +42,8 @@
 			if ('start' in this) {
 				this.start();
 			}
-			if (!this._element.parentNode) {
-				Crafty.stage.inner.appendChild(this._element);
+			if (!this.elem.parentNode) {
+				Crafty.stage.inner.appendChild(this.elem);
 			}
 			this._isActive = true;
 		},
@@ -68,7 +68,7 @@
 			elem.style.height = h+'px';
 			
 			this._childElements.push(elem);
-			this._element.addChild(elem);
+			this.elem.addChild(elem);
 			return elem;
 		},
 		
@@ -181,7 +181,7 @@
 				break;
 				case 'fade':
 					var overlay_elem = document.createElement('div');
-					this._element.addChild(overlay_elem);
+					this.elem.addChild(overlay_elem);
 					var overlay = Crafty.e('2D DOM Color Tween persist')
 										.DOM(overlay_elem)
 										.color(transData.fadeTo);
