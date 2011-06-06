@@ -1,3 +1,4 @@
+(function (Crafty, window, document) {
 Crafty.c("Character", {
 	_effects: null,
 	equipment: null,
@@ -120,5 +121,6 @@ Crafty.c("Character", {
 		});
 		this._damageDisplay = dmpDisp;
 	}
+});
 	
 })(Crafty,window,window.document);

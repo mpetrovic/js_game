@@ -36,7 +36,7 @@
 		 * This function is gonna be awful...
 		 */
 		compileAttackAnimation: function () {
-		}
+		},
 		
 		levelUp: function() {
 			this.level++;

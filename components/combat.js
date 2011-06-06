@@ -12,7 +12,7 @@
 		// Every 10 seconds, the passage resets. The indicators are rebuilt and reset to 0,
 		// and the song will evolve at this point. Players can push how long this passage time is out.
 		// There needs to be a reason to do so.
-		_passiveMaximum: 0*Crafty.getFPS(),
+		_passiveMaximum: 0*Crafty.timer.getFPS(),
 		_passageLeft: 0,
 		_indicatorsMaximum: null,
 		_indicatorsCurrent: null,

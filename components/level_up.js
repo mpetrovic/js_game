@@ -24,7 +24,7 @@
 		
 		setGrowthFormula: function (stat, callback) {
 			this._tendencies[stat] = callback;
-		}
+		},
 		
 		growthFor: function (stat, level) {
 			 return this._tendencies[stat](level);

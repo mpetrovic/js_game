@@ -32,7 +32,7 @@
 		},
 		
 		// gets all the data a component is saving
-		getSaveData() {
+		getSaveData: function() {
 			var data = {
 				c: this.__c,
 				a: {},
