@@ -4,13 +4,13 @@
 	Crafty.c("Interface", {		
 		_data: null,
 		_handlers: null,
+		_element: null,
 		
 		init: function() {
-			this.requires("2D DOM");
 			this._data = {};
 			this._handlers = [];
 			
-			this.bind("enterFrame", this.run);
+			this.bind("enterframe", this.run);
 		},
 		
 		setup: function(runThis) {
@@ -20,6 +20,8 @@
 					args[i-1] = arguments[i];
 				}
 				runThis.apply(this, args);
+			}
+			else {
 			}
 		},
 		
@@ -36,6 +38,10 @@
 		
 		setData: function (key, data) {
 			this._data[key] = data;
+		}
+		
+		getData: function (key) {
+			return this._data[key];
 		}
 		
 		// convience functions for dealing with elements inside this one:

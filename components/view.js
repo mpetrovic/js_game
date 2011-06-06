@@ -57,15 +57,8 @@
 		},
 		
 		addElement: function(x, y, w, h, className, tag, attach) {
-			// not using entities for these internal elements
 			if (!tag) tag = 'div';
-			var elem = document.createElement(tag);
-			elem.className = className;
-			elem.style.position = 'absolute';
-			elem.style.top = y+'px';
-			elem.style.left = x+'px';
-			elem.style.width = w+'px';
-			elem.style.height = h+'px';
+			var ent = Crafty.e("Interface").setup(elementSetup, x, y, w, h, className, tag, attach)
 			
 			this._childElements.push(elem);
 			this._element.appendChild(elem);
@@ -152,6 +145,17 @@
 	Crafty.bind('dismissView', function () {
 		this._views[this._activeView.pop()];
 	});
+	
+	function elementSetup(x, y, w, h, className, tag, attach) {
+			
+		var elem = document.createElement(tag);
+		elem.className = className;
+		elem.style.position = 'absolute';
+		elem.style.top = y+'px';
+		elem.style.left = x+'px';
+		elem.style.width = w+'px';
+		elem.style.height = h+'px';
+	}
 	
 	/*
 	if (arguments.length == 2) {
