@@ -1,6 +1,6 @@
 (function (Crafty, window, document) {
 window.onload = function() {
-
+	Crafty.init(550, 400);
 	Crafty.scene('intro', function() {
 		// load any global game data
 		// play opening video
