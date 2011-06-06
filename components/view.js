@@ -42,8 +42,8 @@
 			if ('start' in this) {
 				this.start();
 			}
-			if (!this.elem.parentNode) {
-				Crafty.stage.inner.appendChild(this.elem);
+			if (!this._element.parentNode) {
+				Crafty.stage.inner.appendChild(this._element);
 			}
 			this._isActive = true;
 		},
@@ -68,7 +68,7 @@
 			elem.style.height = h+'px';
 			
 			this._childElements.push(elem);
-			this.elem.addChild(elem);
+			this._element.addChild(elem);
 			return elem;
 		},
 		
