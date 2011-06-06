@@ -68,7 +68,7 @@
 			elem.style.height = h+'px';
 			
 			this._childElements.push(elem);
-			this._element.addChild(elem);
+			this._element.appendChild(elem);
 			return elem;
 		},
 		
