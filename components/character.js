@@ -39,7 +39,7 @@ Crafty.c("Character", {
 			}
 		}
 		
-		for (var i=0; i<this._effects.length; i++( {
+		for (var i=0; i<this._effects.length; i++) {
 			this.merge(this._equipment[e].stats);
 		}
 		

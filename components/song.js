@@ -1,5 +1,5 @@
 (function (Crafty, document, window) {
-	Crafty.c("Song", function () {
+	Crafty.c("Song", {
 		burst: 0,
 		level: 0,
 		MD: 0,

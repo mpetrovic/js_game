@@ -1,5 +1,5 @@
 (function (Crafty, document, window) {
-	Crafty.c("Usable", function() {
+	Crafty.c("Usable", {
 		_effect: '',
 		_target: '',	// ally or enemy
 		_range: '',		// one or all

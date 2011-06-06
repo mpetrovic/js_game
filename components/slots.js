@@ -10,7 +10,7 @@
 		// use null to remove an upgrade without placing a new one
 		slot: function(upgrade, slot_num) {
 			
-			if (this._slots[slot_num) != null) {
+			if (this._slots[slot_num]) != null) {
 				// an upgrade exists already.
 				Crafty.trigger("AddToInventory", this._slots[slot_num]);
 			}

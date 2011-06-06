@@ -1,5 +1,5 @@
 (function (Crafty, window, document) {
-	var db = NULL, url = '',;
+	var db = NULL, url = '';
 	
 	Crafty.c("Save", {
 		saveName: '',			// machine name for the save. 

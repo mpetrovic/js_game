@@ -71,7 +71,7 @@
 		},
 		
 		gaugeFromDamage: function(unit, value, type) {
-			if (unit != this) continue;
+			if (unit != this) return;
 			
 			
 		},

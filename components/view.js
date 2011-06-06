@@ -7,6 +7,7 @@
  * Flow:
  * User calls Crafty.view('viewName', 'transition') to call the View forward. 
  * Once transition has been completed, it fires 'ActivateView'.
+ * Transitions will need to call this themselves, until I figure out a way to detect when any transition is over.
  * To dismiss a View, they call Crafty.view('viewName', 'transition') which will do the same.
  * Except, the View will fire 'DismissView' before running the transition.
  
@@ -55,7 +56,7 @@
 			this._isActive = false;
 		},
 		
-		addElement: function(x, y, w, h, className, tag) {
+		addElement: function(x, y, w, h, className, tag, attach) {
 			// not using entities for these internal elements
 			if (!tag) tag = 'div';
 			var elem = document.createElement(tag);
@@ -72,7 +73,8 @@
 		},
 		
 		addButton: function (props) {
-			var button = this.addElement(props.x, props.y, props.w, props.h, props.className, 'input');
+			var button = this.addElement(props.x, props.y, props.w, props.h, props.className, 'input', props.attach);
+			button.type = "button";
 			button.value = props.text;
 			this.addEvent(this, button, 'click', props.handler);
 			return button;
@@ -94,7 +96,6 @@
 				dir = this._isActive?'out':'in';
 				if (this._isActive) Crafty.trigger('DismissView', this);
 				this._transitions[trans][dir].call(this);
-				if (!this._isActive) Crafty.trigger('ActivateView', this);
 				this._isActive = !this._isActive;
 			}
 			else if (arguments.length == 2) {
@@ -119,12 +120,13 @@
 		view: function (view_id, view_obj) {
 			Crafty.scene('noScene');
 			if (typeof view_obj == 'object') {
-				if (view_obj.has && !view_obj.has('View') {
-					var new_view = Crafty.e("View");
-					new_view.extend(view_obj);
+				var new_view;
+				if (view_obj.has) {
+					// this is an entity
+					new_view = view_obj.require('View');
 				}
 				else {
-					new_view = view_obj;
+					new_view = Crafty.e("View").extend(view_obj);
 				}
 				if ('create' in new_view) {
 					new_view.create.call(new_view);

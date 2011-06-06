@@ -30,7 +30,7 @@
 		},
 		
 		// semi constants
-		PHYS: 'physical'
+		PHYS: 'physical',
 		FIRE: 'fire',
 		ICE: 'ice',
 		LIGHT: 'lightning',
