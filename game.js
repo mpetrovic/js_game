@@ -20,7 +20,7 @@ window.onload = function() {
 			// Extras
 			var width = 100;
 			var height = 25;
-			var start = {x: Crafty.stage.width/2 - width/2, y: Crafty.stage.height - (height + 5) * 4};
+			var start = {x: Crafty.viewport.width/2 - width/2, y: Crafty.viewport.height - (height + 5) * 4};
 			var menus = {
 				new_game: {
 					name: 'New Game',
@@ -53,14 +53,15 @@ window.onload = function() {
 				var m = menus[i];
 				
 				this.addButton({
-					x: start.x + count * (height + 5),
-					y: start.y,
+					x: start.x,
+					y: start.y + count * (height + 5),
 					w: width,
 					h: height,
 					text: m.name,
 					handler: m.callback,
 					className: '',
 				});
+				count++;
 			}
 		},
 	});

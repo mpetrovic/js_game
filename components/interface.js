@@ -23,6 +23,16 @@
 			}
 			else {
 			}
+			
+			return this;
+		},
+		
+		attachToParent: function(parent) {
+			if (parent.appendChild && this._element) {
+				parent.appendChild(this._element);
+			}
+			
+			return this;
 		},
 		
 		addHandler: function(handler) {
@@ -36,13 +46,17 @@
 			}
 		},
 		
+		setProperty: function(key, data) {
+			this._element[key] = data;
+		},
+		
 		setData: function (key, data) {
 			this._data[key] = data;
-		}
+		},
 		
 		getData: function (key) {
 			return this._data[key];
-		}
+		},
 		
 		// convience functions for dealing with elements inside this one:
 		
@@ -50,4 +64,4 @@
 			return this._element.getElementsByClassName(className)[0];
 		}
 	});
-})(Crafty, window, window.document)
+})(Crafty, window, window.document);

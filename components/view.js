@@ -60,16 +60,17 @@
 			if (!tag) tag = 'div';
 			var ent = Crafty.e("Interface").setup(elementSetup, x, y, w, h, className, tag, attach)
 			
-			this._childElements.push(elem);
-			this._element.appendChild(elem);
-			return elem;
+			this._childElements.push(ent);
+			ent.attachToParent(this._element);
+			return ent;
 		},
 		
 		addButton: function (props) {
 			var button = this.addElement(props.x, props.y, props.w, props.h, props.className, 'input', props.attach);
-			button.type = "button";
-			button.value = props.text;
-			this.addEvent(this, button, 'click', props.handler);
+			button.setProperty('type', "button");
+			button.setProperty('value', props.text);
+			button.addComponent("Mouse");
+			button.bind('click', props.handler);
 			return button;
 		},
 		
@@ -154,7 +155,9 @@
 		elem.style.top = y+'px';
 		elem.style.left = x+'px';
 		elem.style.width = w+'px';
-		elem.style.height = h+'px';
+		elem.style.height = h+'px'
+		
+		this._element = elem;
 	}
 	
 	/*
