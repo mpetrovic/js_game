@@ -88,7 +88,12 @@
 			if (arguments.length == 1) {
 				// we're calling the transition
 				dir = this._isActive?'out':'in';
-				if (this._isActive) Crafty.trigger('DismissView', this);
+				if (this._isActive) {
+					Crafty.trigger('DismissView', this);
+				}
+				else {
+					Crafty.bind("AnimationEnd", activateView);
+				}
 				this._transitions[trans][dir].call(this);
 				this._isActive = !this._isActive;
 			}
@@ -158,6 +163,11 @@
 		elem.style.height = h+'px'
 		
 		this._element = elem;
+	}
+	
+	function activateView() {
+		this.trigger('ActivateView');
+		this.unbind('AnimationEnd', activateView);
 	}
 	
 	/*
