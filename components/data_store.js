@@ -1,28 +1,19 @@
 (function(Crafty, window, document) {
 	var data = {};
+	var queue = [];
+	
 	var xml = new XMLHTTPRequest();
 	
 	Crafty.extend({
 		externalURL: '',
 		
-		prepare: function(type, id, url) {
+		prepare: function(type, id, force) {
 			if (data[type][id]) return;
-			if (!url) var url = this.externalURL;
-			url = url+'?type='+type+'&id='+id;
 			
-			// run ajax call
-			// ie8+ only. if you're using ie7 or below, i don't care
-			if (!xml) return;
-			
-			xml.open("GET", this.externalURL, false);
-			xml.onreadystatechange = function() {
-				if (xml.readyState != 4) return;
-				if (xml.status != 200 && xml.status != 302) {
-				}
-				this.process(type, id, eval(xml.transportText));
-			};
-			xml.ontimeout = function () {
-			};
+			queue.push('req[][type]='+type+'&req[][id]='+id);
+			if (force) {
+				getData(force);
+			}
 		},
 		
 		_process: function(type, id, data) {
@@ -36,8 +27,7 @@
 		get: function(type, id) {
 			if (!this._data[type][id]) {
 				this.loading(); 
-				this.prepare(type, id);
-				return;
+				this.prepare(type, id, true);
 			}
 			
 			var d = data[type][id], 
@@ -52,13 +42,46 @@
 			
 			// ensure that necessary data is loaded
 			for (i in d.ensure) {
-				this.prepare(type, id);
+				this.prepare(type, id, true);
 			}
 			
+			for (i in d.next) {
+				var next = d.next[i];
+				this.prepare(next.type, next.id);
+			}
+			
+			this.loading(false);
 			return new_entity;
 		},
 		
 		loading: function() {
 		},
 	});
+	
+	function getData(force) {
+		
+		// run ajax call
+		// ie8+ only. if you're using ie7 or below, i don't care
+		if (!xml || !queue.length) return;
+		
+		var url = Crafty.externalURL+'?'+queue.join('&');
+		
+		xml.open("GET", this.externalURL, !force);
+		xml.onreadystatechange = function() {
+			if (xml.readyState != 4) return;
+			if (xml.status != 200 && xml.status != 302) {
+			}
+			Crafty._process(type, id, eval(xml.transportText));
+			queue = [];
+		};
+		xml.ontimeout = function () {
+			getData();
+		};
+		xml.send();
+		if (force) {
+			xml.onreadystatechange();
+		}
+	}
+	
+	var dataLoad = window.setInterval(getData, 5000);
 });
