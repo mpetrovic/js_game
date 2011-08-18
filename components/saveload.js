@@ -1,3 +1,30 @@
+/**
+ * SaveLoad
+ * ---------
+ * Implements a mechanism to save and load data from either a server or from someplace in the browser
+ * The system will run go through a number of fallbacks to use the most advanced and versatile storage method. 
+ *
+ * Each Component with data to save should bind to the "SaveData" event. 
+ * The function will receive an object as a parameter.
+ * Enough data should be added to this object that it can be reconstructed later
+ * The key for each entity will be its path in the DataStore
+ * 
+ * IndexedDB:
+ * Each game should have a database
+ * Each database should contain a 'global' store and a store for each game save
+ * Each game save should contain all the objects that have been saved
+ *
+ * WebSQL:
+ * Each game will have a database
+ * Each database should contain a global table of keys and values, and a table for each game save
+ * Each game save should have a key, a list of components, and attribute fields.
+ * These will be serialized as strings, they will need to be eval'd on load
+ *
+ * webStorage & cookies:
+ * Storage objects will have a {gameName}-global key with a serialized object as a value
+ * In addition to a {gameName}-{saveName} key for each save game.
+ * Save game values will be a serialized object keyed with DataStore path and values of an entities components and attributes
+ */
 (function (Crafty, window, document) {
 	var db = NULL, url = '';
 	
@@ -45,7 +72,7 @@
 		saveIndexed: function() {
 			if (db == NULL) {
 				db = {};
-				var request = window.indexDB.open("ArTonelico_CellianNights", "Saved Data for Ar Tonelico: Cellian Nights");
+				var request = window.indexedDB.open(Crafty.gameName);
 				request.onsuccess = function(event) {
 					db.database = event.result;
 					var request2 = this.db.database.setVersion(1);
@@ -84,6 +111,7 @@
 	});
 	
 	Crafty.extend({
+		gameName: '',
 		setSaveGameURL: function (new_url) {
 			// check the URL works
 			if (1) {
