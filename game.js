@@ -1,6 +1,7 @@
 (function (Crafty, window, document) {
 window.onload = function() {
-	Crafty.init(550, 400);
+	Crafty.init();
+	if (Crafty.storage) Crafty.storage.open("ArTonelicoLunar01");
 	Crafty.scene('intro', function() {
 		// load any global game data
 		// play opening video
@@ -18,51 +19,47 @@ window.onload = function() {
 			// Load Game
 			// Settings
 			// Extras
-			var width = 100;
-			var height = 25;
-			var start = {x: Crafty.viewport.width/2 - width/2, y: Crafty.viewport.height - (height + 5) * 4};
-			var menus = {
-				new_game: {
-					name: 'New Game',
-					callback: function() {
-						this.deactivate();
-						Crafty.get('cutscene', 'scene_00').play();
-					},
-				}, 
-				load_game: {
-					name: 'Load Game',
-					callback: function() {
-						Crafty.view('saveLoad', 'slideUp');
-					},
-				}, 
-				settings: {
-					name: 'Settings',
-					callback: function() {
-						Crafty.scene('gameSettings');
-					},
-				}, 
-				extras: {
-					name: 'Extras',
-					callback: function() {
-						Crafty.view('extras', 'slideUp');
-					},
-				}
-			};
-			var count = 0;
-			for (var i in menus) {
-				var m = menus[i];
-				
-				this.addButton({
-					x: start.x,
-					y: start.y + count * (height + 5),
-					w: width,
-					h: height,
-					text: m.name,
-					handler: m.callback,
-					className: '',
-				});
-				count++;
-			}
+			var view = this,
+				width = 100,
+				height = (25 + 5) * 5,
+				start = {w: width, h: height, x: Crafty.viewport.width/2 - width/2, y: Crafty.viewport.height - height},
+				menus = "\r\n";
+			menus += "	<ul class=\"menu_main\">\r\n";
+			menus += "		<li id=\"continue\">Continue</li>\r\n";
+			menus += "		<li id=\"new_game\">New Game</li>\r\n";
+			menus += "		<li id=\"load_game\">Load Game</li>\r\n";
+			menus += "		<li id=\"settings\">Settings</li>\r\n";
+			menus += "		<li id=\"extras\">Extras</li>\r\n";
+			menus += "	</ul>";
+			
+			Crafty.e("HTML Mouse")
+				  .replace(menus)
+				  .attr(start)
+				  .attr(_element: this._element)
+				  .bind('Click', function (e) {
+					switch (e.target.id) {
+						case 'continue':
+							Crafty.storage.load('last_game', 'cache', function (data) {
+								this.deactivate();
+								// load game
+							});
+						break;
+						case 'new_game':
+							this.deactivate();
+							Crafty.get('cutscene', 'scene_00').play();
+						break;
+						case 'load_game':
+							Crafty.view('saveLoad', 'slideUp');
+						break;
+						case 'settings':
+							Crafty.scene('gameSettings');
+						break;
+						case 'extras':
+							Crafty.view('extras', 'slideUp');
+						break;
+					}
+				  });
+			
 		},
 	});
 	
@@ -75,6 +72,14 @@ window.onload = function() {
 	Crafty.view('combat', {
 		create: function() {
 			this.addComponent('CombatEngine Cutscene');
+		},
+		
+		start: function() {
+			this.startCombat();
+		},
+		
+		stop: function() {
+			this.endCombat();
 		}
 	});
 	
