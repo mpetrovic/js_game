@@ -25,15 +25,13 @@
 (function (Crafty, window, document) {
 	Crafty.c("View", {
 		name: '',
-		_childElements: null,
 		_hasInit: false,
 		_isActive: false,
 		_transitions: null,
 		
 		init: function () {
-			this._childElements = [];
 			this._transitions = {};
-			this.requires('2D, DOM, Tween, persist');
+			this.requires('2D, DOM, Tween, Persist');
 			this.attr({x: 0, y:0, h: Crafty.DOM.window.height, w:Crafty.DOM.window.width});
 		},
 		
@@ -54,24 +52,6 @@
 				this.stop();
 			}
 			this._isActive = false;
-		},
-		
-		addElement: function(x, y, w, h, className, tag, attach) {
-			if (!tag) tag = 'div';
-			var ent = Crafty.e("Interface").setup(elementSetup, x, y, w, h, className, tag, attach)
-			
-			this._childElements.push(ent);
-			ent.attachToParent(this._element);
-			return ent;
-		},
-		
-		addButton: function (props) {
-			var button = this.addElement(props.x, props.y, props.w, props.h, props.className, 'input', props.attach);
-			button.setProperty('type', "button");
-			button.setProperty('value', props.text);
-			button.addComponent("Mouse");
-			button.bind('click', props.handler);
-			return button;
 		},
 		
 		/*

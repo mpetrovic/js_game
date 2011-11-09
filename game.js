@@ -2,6 +2,7 @@
 window.onload = function() {
 	Crafty.init();
 	if (Crafty.storage) Crafty.storage.open("ArTonelicoLunar01");
+	Crafty.data.externalURL = 'http://www.guneva.net/artonelico/data.php';
 	Crafty.scene('intro', function() {
 		// load any global game data
 		// play opening video
@@ -10,6 +11,15 @@ window.onload = function() {
 			Crafty.view('gameMenu');
 			this.destroy();
 		});
+		
+		Crafty.data.prepare('combat', 'combat.rous');
+		Crafty.data.prepare('combat', 'combat.sera');
+		Crafty.data.prepare('combat', 'combat.tahna');
+		Crafty.data.prepare('combat', 'combat.berix');
+		Crafty.data.prepare('combat', 'combat.ceyna');
+		Crafty.data.prepare('combat', 'combat.hara');
+		Crafty.data.prepare('combat', 'combat.kid');
+		Crafty.data.prepare('combat', 'combat.nerd');
 	});
 	
 	Crafty.view('gameMenu', {

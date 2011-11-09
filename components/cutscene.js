@@ -55,6 +55,8 @@ Crafty.c("SceneLine", {
 			break;
 			case 'camera':
 			break;
+			case 'wait':
+			break;
 		}
 		
 		// set up trigger for next line
