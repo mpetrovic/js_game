@@ -34,7 +34,8 @@ Crafty.c('Terrain', {
 	 @param int z	Position on z axis
 	 */
 	addObject: function (obj, x, y, z) {
-		this._objects.push(obj.attr({'x': x, 'y': y, 'z': z}));
+		this._objects.push(obj.requires('3D').attr({'x': x, 'y': y, 'z': z}));
+		return this;
 	},
 	
 	/**
@@ -59,6 +60,16 @@ Crafty.c('Terrain', {
 	* their own z-axis
 	*/
 	addFloor: function (x, y, w, h, z, texture, tex_off_x, tex_off_y) {
+		var floor = Crafty.e('3D, '+texture).attr({
+			x: x,
+			y: y,
+			w: w,
+			h: h,
+			z: z
+		});
+		floor.setParent(this);
+		this.floors.push(floor);
+		return this;
 	},
 	
 	/**
@@ -79,6 +90,16 @@ Crafty.c('Terrain', {
 	 * them unless they have no_clip set. 
 	 */
 	addWall: function (facing, l, h, z, texture) {
+		var wall = Crafty.e('3D, '+texture).attr({
+			w: l,
+			h: h,
+			z: z,
+			rZ: facing,
+			rX: 90,
+		});
+		wall.setParent(this);
+		this.wall.push(wall);
+		return this;
 	},
 });
 
@@ -108,6 +129,7 @@ Crafty.c('3D', {
 	 */
 	setParent: function (parent) {
 		this.parent = parent;
+		return this;
 	},
 	
 	/**
@@ -177,3 +199,38 @@ Crafty.c('Camera', {
 	// oh god what goes here
 	},
 }
+
+/**
+ #Volume
+ @comp 3D
+ * Defines a volume in 3D space
+ * Useful for triggers
+ */
+Crafty.c('Volume', {
+	h: 0,
+	
+	init: function() {
+		this.requires('3D');
+	},
+	
+	Volume: function(hgt) {
+		this.h = hgt;
+	},
+});
+
+/**
+ #Ramp
+ @comp 3D
+ * Allows for actors to move up and down z-levels
+ */
+Crafty.c('Ramp', {
+	init: function () {
+		this.requires('Volume, Collision');
+		
+		this.bind('OnHit', this.onHit);
+	},
+	
+	onHit: function (e) {
+		// i have no idea how collision works
+	}
+});
