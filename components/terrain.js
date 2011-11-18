@@ -132,16 +132,25 @@ Crafty.c('3D', {
 Crafty.c('Camera', {
 	target: null,
 	type: 'overhead',
+	_transforms: null,
 	
 	init: function () {
 		this.requires('3D');
 		this.target = Crafty.e('3D');
+		_transforms = {};
+		this._calcTransforms();
 	},
 	
 	Camera: function (type, parent) {
 		this.type = type;
 		this.target.setParent(parent);
 	},
+	
+	/**
+	 * Looks at a point or an entity. Whichever
+	 */
+	lookAt: function (obj) {
+	}
 	
 	/**
 	 #.zoom
@@ -154,6 +163,16 @@ Crafty.c('Camera', {
 		
 	},
 	
+	_calcTransforms: function () {
+	),
+	
+	/**
+	 * For DOM:
+	 * Transforms the world according to angles and positions of camera and target relative to each other
+	 * For Canvas:
+	 * ???????
+	 * Maybe use SVG for all this?
+	 */
 	_render() {
 	// oh god what goes here
 	},
