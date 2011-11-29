@@ -16,6 +16,7 @@ Crafty.c('Terrain', {
 	_objects: null,
 	_floors: null,
 	_walls: null,
+	_hash: null,
 	
 	init: function () {
 		this.requires('3D');
@@ -106,19 +107,29 @@ Crafty.c('Terrain', {
 /**
  * #3D
  * @comp 3D
- * An object in 3D space. Limited to planes, at the moment
+ * An object in 3D space. Limited to boxes, cause I ain't doing meshes.
  * Coordinates and dimensions are in 'units', a generic measurement with a variable relationship to pixels
+ * All transforms should be done relative to the world itself, NOT the viewport
  */
 Crafty.c('3D', {
-	x: 0,
+	x: 0,	// translation
 	y: 0,
 	z: 0,
-	rX: 0,
+	rX: 0,	// rotation
 	rY: 0,
 	rZ: 0,
-	w: 0,
-	length: 0,
+	sX: 1,	// scale...ation
+	sY: 1,
+	sZ: 1,
+	w: 0,	// dimension
+	l: 0,
+	h: 0,
 	parent: null,
+	origin: null,
+	
+	init: function() {
+		this.origin = {x: 0, y: 0, z: 0};
+	},
 	
 	/**
 	 #.setParent
@@ -137,7 +148,7 @@ Crafty.c('3D', {
 	 @comp 3D
 	 @sign public this.transformRelativeToSelf(Object transforms)
 	 @param Object transforms	object of key => value pairs. The key is the transform property, the value is the amount
-	 * A 3D object should have 2 sets of coordinates to refer to. It's parent and itself. By default, we manipulate data relative to the world.
+	 * A 3D object should have 2 coordinate systems to refer to. It's parent and itself. By default, we manipulate data relative to the world.
 	 * This function allows entities to move using their own coordnate system.
 	 */
 	transformRelativeToSelf: function (transforms) {
@@ -152,6 +163,7 @@ Crafty.c('3D', {
  * as well as certain behaviors on the camera itself.
  */
 Crafty.c('Camera', {
+	active: false,
 	target: null,
 	type: 'overhead',
 	_transforms: null,
@@ -194,29 +206,14 @@ Crafty.c('Camera', {
 	 * For Canvas:
 	 * ???????
 	 * Maybe use SVG for all this?
+	 * Gets a list of all the entities in viewing range and only changes them.
+	 * This should be the very very very last step in an EnterFrame, to ensure all changes have been made before drawing anything
 	 */
 	_render() {
+		if (!this.active) return;
 	// oh god what goes here
 	},
 }
-
-/**
- #Volume
- @comp 3D
- * Defines a volume in 3D space
- * Useful for triggers
- */
-Crafty.c('Volume', {
-	h: 0,
-	
-	init: function() {
-		this.requires('3D');
-	},
-	
-	Volume: function(hgt) {
-		this.h = hgt;
-	},
-});
 
 /**
  #Ramp
@@ -225,7 +222,7 @@ Crafty.c('Volume', {
  */
 Crafty.c('Ramp', {
 	init: function () {
-		this.requires('Volume, Collision');
+		this.requires('Collision');
 		
 		this.bind('OnHit', this.onHit);
 	},
@@ -233,4 +230,36 @@ Crafty.c('Ramp', {
 	onHit: function (e) {
 		// i have no idea how collision works
 	}
+});
+
+/** 
+ #Collides
+ @comp 3D
+ * Adding this component to an entity will check for collision with all entities with Collides.
+ * Don't bother filtering by which component to collide with. This should be handled in the onCollide
+ * handler.
+ */
+Crafty.c('Collides', {
+
+	init: function() {
+		this.bind('EnterFrame', this._checkCollision);
+	},
+	
+	_checkCollision: function() {
+		var collide, SAT;
+		if (this.has('3D') && this.parent) {
+			// check the parent's HashMap then check against individual entities for collision
+			
+			if (collide)
+				this.trigger('OnCollide', collide, SAT);
+				collide.trigger('OnCollide', this, SAT);
+		}
+		else if (this.has('2D') {
+			// check HashMap, then individual entities
+			
+			if (collide)
+				this.trigger('OnCollide', collide, SAT);
+				collide.trigger('OnCollide', this, SAT);
+		}
+	},
 });
