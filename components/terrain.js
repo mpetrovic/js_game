@@ -106,7 +106,7 @@ Crafty.c('Terrain', {
 
 /**
  * #3D
- * @comp 3D
+ * @category 3D
  * An object in 3D space. Limited to boxes, cause I ain't doing meshes.
  * Coordinates and dimensions are in 'units', a generic measurement with a variable relationship to pixels
  * All transforms should be done relative to the world itself, NOT the viewport
@@ -144,6 +144,22 @@ Crafty.c('3D', {
 	},
 	
 	/**
+	 * #.sub
+	 * @comp 3D
+	 * @sign public this.sub(Entity point)
+	 * @param Entity point	The entity to get the difference for
+	 * Gets a Vector for the distance between 2 3D entities
+	 */
+	sub: function (point) {
+		if (!point.has('3D')) return {x: 0, y: 0, z: 0};
+		return Crafty.e('3D').attr({
+			x: point.x - this.x,
+			y: point.y - this.y,
+			z: point.z - this.z
+		});
+	},
+	
+	/**
 	 #.transformRelativeToSelf
 	 @comp 3D
 	 @sign public this.transformRelativeToSelf(Object transforms)
@@ -157,7 +173,7 @@ Crafty.c('3D', {
 
 /**
  #Camera
- @comp 3D
+ @category 3D
  * A camera that renders a World entity and all of the 3D entities in contains.
  * The camera has a target, which is another 3D entity, and a type, which determines how the world is rendered 
  * as well as certain behaviors on the camera itself.
@@ -178,6 +194,9 @@ Crafty.c('Camera', {
 	Camera: function (type, parent) {
 		this.type = type;
 		this.target.setParent(parent);
+		if (type == '3D' && !Crafty.support.css3dtransform) {
+			this.type = 'overhead';
+		}
 	},
 	
 	/**
@@ -188,13 +207,22 @@ Crafty.c('Camera', {
 	
 	/**
 	 #.zoom
-	 @comp 3D
+	 @comp Camera
 	 @sign public this.zoom(float amt)
 	 @param float amt	multiplier to zoom in by
 	 * Moves the camera closer to or farther from the target
 	 */
 	zoom: function (amt) {
 		
+	},
+	
+	/**
+	 * Gets all the objects in the field of view of this camera. All other objects will not be updated.
+	 * Calculate a set of vectors that create the FOV box, then find all objects that intersect the box
+	 * The box will be a pyramid with a nexus of the camera's location, centered on the target. 
+	 * The corners of the box will extend past the hash map to ensure it hits everything.
+	 */
+	_getObjectsInView: function () {
 	},
 	
 	_calcTransforms: function () {
@@ -211,13 +239,14 @@ Crafty.c('Camera', {
 	 */
 	_render() {
 		if (!this.active) return;
-	// oh god what goes here
+		
+		
 	},
 }
 
 /**
  #Ramp
- @comp 3D
+ @category 3D
  * Allows for actors to move up and down z-levels
  */
 Crafty.c('Ramp', {
@@ -234,7 +263,7 @@ Crafty.c('Ramp', {
 
 /** 
  #Collides
- @comp 3D
+ @category 3D
  * Adding this component to an entity will check for collision with all entities with Collides.
  * Don't bother filtering by which component to collide with. This should be handled in the onCollide
  * handler.
@@ -260,6 +289,20 @@ Crafty.c('Collides', {
 			if (collide)
 				this.trigger('OnCollide', collide, SAT);
 				collide.trigger('OnCollide', this, SAT);
+		}
+	},
+});
+
+/**
+ #Render
+ @category 3D
+ * Marks an entity to be rendered.
+ * All others should not be rendered at all.
+ */
+Crafty.c('Render', {
+	render: function (render_method) {
+		if (this.has('3D')) {
+			// transform the entity
 		}
 	},
 });
