@@ -194,7 +194,7 @@ Crafty.c('Camera', {
 	Camera: function (type, parent) {
 		this.type = type;
 		this.target.setParent(parent);
-		if (type == '3D' && !Crafty.support.css3dtransform) {
+		if (type == '3D' && (!Crafty.support.css3dtransform && !Crafty.support.webgl) {
 			this.type = 'overhead';
 		}
 	},
@@ -301,8 +301,35 @@ Crafty.c('Collides', {
  */
 Crafty.c('Render', {
 	render: function (render_method) {
-		if (this.has('3D')) {
+		if (method == '3d' && this.has('3D')) {
 			// transform the entity
+			
+			if (Crafty.support.css3dtransform) {
+				// css properties:
+				// perspective goes on parent: 
+				//		needs to be 1000 or so for Z-rotation to work right
+				// camera transforms go on world element
+				// 		NEEDS transform-style: preserve-3d
+				//		camera Z = negative translateZ
+				//		camera X and Y appear to be be positive
+				// object transforms go on child elements
+				//		should be straightforward
+				// doodad transforms:
+				//		position comes from object
+				//		rotation comes from camera
+			}
+			else if (Crafty.support.webgl) {
+				// webgl stuff
+				// i have no idea what goes here
+			}
+		}
+		else if (method == 'isometric') {
+			// some trig is needed here
+		}
+		else {
+			// assume overhead view
+			// there's little difference between this view and using the standard 2D component.
+			// except there should be some handling of Z levels.
 		}
 	},
 });
