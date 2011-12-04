@@ -35,7 +35,7 @@ Crafty.c('Terrain', {
 	 @param int z	Position on z axis
 	 */
 	addObject: function (obj, x, y, z) {
-		this._objects.push(obj.requires('3D').attr({'x': x, 'y': y, 'z': z}));
+		this._objects.push(obj.requires('3D').setParent(this).attr({'x': x, 'y': y, 'z': z}));
 		return this;
 	},
 	
@@ -61,14 +61,13 @@ Crafty.c('Terrain', {
 	* their own z-axis
 	*/
 	addFloor: function (x, y, w, h, z, texture, tex_off_x, tex_off_y) {
-		var floor = Crafty.e('3D, '+texture).attr({
+		var floor = Crafty.e('3D, Collides, Render, '+texture).attr({
 			x: x,
 			y: y,
 			w: w,
 			h: h,
 			z: z
 		});
-		floor.setParent(this);
 		this.floors.push(floor);
 		return this;
 	},
@@ -91,14 +90,13 @@ Crafty.c('Terrain', {
 	 * them unless they have no_clip set. 
 	 */
 	addWall: function (facing, l, h, z, texture) {
-		var wall = Crafty.e('3D, '+texture).attr({
+		var wall = Crafty.e('3D, Collides, Render'+texture).attr({
 			w: l,
 			h: h,
 			z: z,
 			rZ: facing,
 			rX: 90,
 		});
-		wall.setParent(this);
 		this.wall.push(wall);
 		return this;
 	},
@@ -300,6 +298,12 @@ Crafty.c('Collides', {
  * All others should not be rendered at all.
  */
 Crafty.c('Render', {
+	_renderData: null,
+	
+	init: function () {
+		this._renderData = {};
+	},
+	
 	render: function (render_method) {
 		if (method == '3d' && this.has('3D')) {
 			// transform the entity
@@ -317,6 +321,53 @@ Crafty.c('Render', {
 				// doodad transforms:
 				//		position comes from object
 				//		rotation comes from camera
+				var rd = this._renderData = this._renderData || {elem: null, changed: true, transforms:{}};
+				if (rd.elem == null) {
+					rd.elem = document.createElement('div');
+					rd.changed = true;
+				}
+				
+				if (rd.changed) {
+					// calculate the transforms and put them in the transform object
+					// NOTES:
+					// ORDER MATTERS!
+					// translate first, then rotateZ, then rotateZ/Y. 
+					// default origin is w/2, h/2
+					// first step is matching the element's 0,0 to the world's 0,0. This just makes things easier. 
+					// this is different from the transform origin
+					rd.elem.style.top = '0px'
+					rd.elem.style.left = '0px'
+					
+					// the position will need to be offset if any rotation on X or Y has happened
+					var offset = {x:0, y:0, z:0};
+					if (this.rX && this.rY) {
+						// some special math I don't know yet
+					}
+					else if (this.rX || this.rY) {
+						var axis = this.rX?'X':'Y',
+							tilt = this['r'+axis],
+							compl = 90 - tilt,
+							hyp = (axis=='X')?this.h/2:this.w/2;
+						offset.z = Math.sin(Crafty.math.degToRad(compl)) * hyp;
+						offset[axis.toLowerCase()] = (Math.sin(Crafty.math.degToRad(tilt)) * hyp)*-1;
+					}
+					rd.transforms.translateX = this.x + offset.x + 'px';
+					rd.transforms.translateY = this.y + offset.y + 'px';
+					rd.transforms.translateZ = this.z + offset.z + 'px';
+					rd.transforms.rotateZ = this.rZ+'deg';
+					rd.transforms.rotateX = this.rX+'deg';
+					rd.transforms.rotateY = this.rY+'deg';
+					rd.transforms.scaleX = this.sX;
+					rd.transforms.scaleY = this.sY;
+					rd.transforms.scaleZ = this.sZ;
+					
+					var str = '';
+					for (var i in rd.transforms) {
+						str += i+'('+rd.transforms[i]+')' ;
+					}
+					rd.elem.style[support.prefix + "Transform"] = str;
+				}
+				
 			}
 			else if (Crafty.support.webgl) {
 				// webgl stuff
