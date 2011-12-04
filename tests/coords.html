@@ -1,0 +1,46 @@
+<html>
+<head>
+	<title>css 3d transforms</title>
+	<style>
+		#world {
+			position: relative;
+		}
+		
+		#world div {
+			position: absolute;
+		}
+	</style>
+	<script>
+		window.onload = function () {
+			var world = document.getElementById('world'), dragging = false, old = {}, actual = {x: 63, z: 45};
+			document.body.addEventListener('mousedown', function (e) {
+				dragging = true;
+				old.x = e.clientX;
+				old.y = e.clientY;
+			}, false);
+			document.body.addEventListener('mousemove', function (e) {
+				if (!dragging) return;
+				var diff = {x: e.clientX - old.x, y: e.clientY - old.y};
+				console.log(diff.x+' '+diff.y);
+				old.x = e.clientX;
+				old.y = e.clientY;
+				actual.x += diff.y*1;
+				actual.z += diff.x*1;
+				world.style.webkitTransform = 'rotateX('+actual.x+'deg) rotateZ('+actual.z+'deg)';
+			}, false);
+			document.body.addEventListener('mouseup', function (e) {
+				dragging = false;
+			}, false);
+		};
+	</script>
+</head>
+<body>
+	<div id="world" style="-webkit-transform: rotateX(63deg) rotateZ(45deg); -webkit-transform-origin: 0px 0px 0px; position: absolute; top: 400px; left: 400px; -webkit-transform-style: preserve-3d;">
+		<div style="left: -500px; width: 1000px; height: 2px; background-color: black;"></div>
+		<div style="top: -500px; width: 2px; height: 1000px; background-color: black;"></div>
+		<div style="top: -500px; width: 2px; height: 1000px; background-color: black; -webkit-transform: rotateX(90deg);"></div>
+		
+		<div style="top: -50px; left: -50px; width: 100px; height: 100px; background-color: red; -webkit-transform: translate3d(0px, 0px, 0px) rotateZ(0deg) rotateX(45deg) rotateY(45deg);"></div>
+	</div>
+</body>
+</html>
