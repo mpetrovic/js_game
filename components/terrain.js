@@ -26,6 +26,26 @@ Crafty.c('Terrain', {
 	},
 	
 	/**
+	 #.get
+	 @comp Terrain
+	 @sign public this.get(String selector)
+	 @param String selector		The entities you want from this object
+	 @return Array 				An array of entities
+	*/
+	get: function (selector) {
+		var i, j, set = true, ret = [], sel = selector.split(', '), obj;
+		for (i in this._objects) {
+			set = true;
+			obj = this._objects[i];
+			for (j in sel) {
+				set = set && obj.has(sel[j]);
+			}
+			if (set) ret.push(obj);
+		}
+		return ret;
+	},
+	
+	/**
 	 #.addObject
 	 @comp Terrain
 	 @sign public this.addObject(Entity obj, int x, int y, int z)
@@ -149,7 +169,7 @@ Crafty.c('3D', {
 	 * Gets a Vector for the distance between 2 3D entities
 	 */
 	sub: function (point) {
-		if (!point.has('3D')) return {x: 0, y: 0, z: 0};
+		if (typeof point != 'object' || !('has' in point) || !point.has('3D')) throw "Point is not a 3D entity.";
 		return Crafty.e('3D').attr({
 			x: point.x - this.x,
 			y: point.y - this.y,
@@ -221,9 +241,11 @@ Crafty.c('Camera', {
 	 * The corners of the box will extend past the hash map to ensure it hits everything.
 	 */
 	_getObjectsInView: function () {
+		return this.parent.get('Render');
 	},
 	
 	_calcTransforms: function () {
+		return {};
 	),
 	
 	/**
@@ -238,7 +260,36 @@ Crafty.c('Camera', {
 	_render() {
 		if (!this.active) return;
 		
-		
+		if (this.type == '3D') {
+			if (Crafty.support.css3dtransforms) {
+				var par = this.parent.renderElement;
+				if (typeof this.parent.renderElement == 'undefined') {
+					par = this.parent.renderElement = document.createElement('div');
+					par.style[support.prefix+"TransformStyle"] = 'preserve-3d';
+					par.style.position = 'relative';
+					par.id = "CraftyTerrain";
+				}
+				
+				var world = document.getElementById("CraftyTerrain");
+				if (world && world !== par) {
+					world.parentNode.appendChild(par);
+					world.parentNode.removeChild(world);
+					world = par;
+				}
+				else if (!world) {
+					Crafty.stage.inner.appendChild(par);
+					Crafty.stage.inner.style[support.prefix+"Perspective"] = '1000';
+				}
+				
+				var transforms = this._calcTransforms();
+				// do things with them
+				
+				var objs = this._getObjectsInView();
+				for (var i in objs) {
+					objs[i].render(this.method);
+				}
+			}
+		}
 	},
 }
 
@@ -305,7 +356,8 @@ Crafty.c('Render', {
 	},
 	
 	render: function (render_method) {
-		if (method == '3d' && this.has('3D')) {
+		if (method == '3D' && this.has('3D')) {
+			if (!this.parent) throw 'No parent set for entity';
 			// transform the entity
 			
 			if (Crafty.support.css3dtransform) {
@@ -324,7 +376,13 @@ Crafty.c('Render', {
 				var rd = this._renderData = this._renderData || {elem: null, changed: true, transforms:{}};
 				if (rd.elem == null) {
 					rd.elem = document.createElement('div');
+					rd.elem.style.position = 'absolute';
+					rd.elem.style.top = '0px';
+					rd.elem.style.left = '0px';
+					rd.elem.style.width = this.w+'px';
+					rd.elem.style.height = this.l+'px';
 					rd.changed = true;
+					this.parent.renderElement.appendChild(rd.elem);
 				}
 				
 				if (rd.changed) {
