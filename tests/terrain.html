@@ -1,0 +1,18 @@
+<html>
+<head>
+	<title>Terrain tests</title>
+	<script type="text/javascript" src="../../git/Crafty/Crafty-local.js"></script>
+	<script type="text/javascript" src="../components/terrain.js"></script>
+	<script type="text/javascript">
+		Crafty.init(500, 400);
+		Crafty.sprite(50, 50, '../../Downloads/walker_tank_05.jpg', {tank1: {0, 0}, tank2: [1, 0], tank3: [2, 0]);
+		var terr = Crafty.e('Terrain');
+		terr.addFloor(0, 0, 100, 100, 0, 'tank1');
+		terr.addFloor(100, 0, 100, 100, 0, 'tank2');
+		terr.addWall(100,0, 100, 100, 0, 'tank3');
+		Crafty.e('Camera').setParent(terr)._render();
+	</script>
+</head>
+<body>
+</body>
+</html>
