@@ -81,14 +81,15 @@ Crafty.c('Terrain', {
 	* their own z-axis
 	*/
 	addFloor: function (x, y, w, h, z, texture, tex_off_x, tex_off_y) {
-		var floor = Crafty.e('3D, Collides, Render, '+texture).attr({
+		var floor = Crafty.e('3D, Collides, Render, '+texture).setParent(this).attr({
 			x: x,
 			y: y,
 			w: w,
 			h: h,
 			z: z
 		});
-		this.floors.push(floor);
+		this._floors.push(floor);
+		this._objects.push(floor);
 		return this;
 	},
 	
@@ -110,14 +111,15 @@ Crafty.c('Terrain', {
 	 * them unless they have no_clip set. 
 	 */
 	addWall: function (facing, l, h, z, texture) {
-		var wall = Crafty.e('3D, Collides, Render'+texture).attr({
+		var wall = Crafty.e('3D, Collides, Render, '+texture).setParent(this).attr({
 			w: l,
 			h: h,
 			z: z,
 			rZ: facing,
 			rX: 90,
 		});
-		this.wall.push(wall);
+		this._walls.push(wall);
+		this._objects.push(wall);
 		return this;
 	},
 });
@@ -211,17 +213,19 @@ Crafty.c('Camera', {
 	
 	Camera: function (type, parent) {
 		this.type = type;
+		this.setParent(parent);
 		this.target.setParent(parent);
-		if (type == '3D' && (!Crafty.support.css3dtransform && !Crafty.support.webgl) {
+		if (type == '3D' && (!Crafty.support.css3dtransform && !Crafty.support.webgl)) {
 			this.type = 'overhead';
 		}
+		return this;
 	},
 	
 	/**
 	 * Looks at a point or an entity. Whichever
 	 */
 	lookAt: function (obj) {
-	}
+	},
 	
 	/**
 	 #.zoom
@@ -246,7 +250,7 @@ Crafty.c('Camera', {
 	
 	_calcTransforms: function () {
 		return {};
-	),
+	},
 	
 	/**
 	 * For DOM:
@@ -257,15 +261,15 @@ Crafty.c('Camera', {
 	 * Gets a list of all the entities in viewing range and only changes them.
 	 * This should be the very very very last step in an EnterFrame, to ensure all changes have been made before drawing anything
 	 */
-	_render() {
+	_render: function () {
 		if (!this.active) return;
 		
 		if (this.type == '3D') {
-			if (Crafty.support.css3dtransforms) {
+			if (Crafty.support.css3dtransform) {
 				var par = this.parent.renderElement;
 				if (typeof this.parent.renderElement == 'undefined') {
 					par = this.parent.renderElement = document.createElement('div');
-					par.style[support.prefix+"TransformStyle"] = 'preserve-3d';
+					par.style[Crafty.support.prefix+"TransformStyle"] = 'preserve-3d';
 					par.style.position = 'relative';
 					par.id = "CraftyTerrain";
 				}
@@ -278,7 +282,7 @@ Crafty.c('Camera', {
 				}
 				else if (!world) {
 					Crafty.stage.inner.appendChild(par);
-					Crafty.stage.inner.style[support.prefix+"Perspective"] = '1000';
+					Crafty.stage.inner.style[Crafty.support.prefix+"Perspective"] = '1000';
 				}
 				
 				var transforms = this._calcTransforms();
@@ -286,12 +290,14 @@ Crafty.c('Camera', {
 				
 				var objs = this._getObjectsInView();
 				for (var i in objs) {
-					objs[i].render(this.method);
+					if (objs[i].has('Render')) {
+						objs[i].render(this.type);
+					}
 				}
 			}
 		}
 	},
-}
+});
 
 /**
  #Ramp
@@ -332,7 +338,7 @@ Crafty.c('Collides', {
 				this.trigger('OnCollide', collide, SAT);
 				collide.trigger('OnCollide', this, SAT);
 		}
-		else if (this.has('2D') {
+		else if (this.has('2D')) {
 			// check HashMap, then individual entities
 			
 			if (collide)
@@ -351,11 +357,7 @@ Crafty.c('Collides', {
 Crafty.c('Render', {
 	_renderData: null,
 	
-	init: function () {
-		this._renderData = {};
-	},
-	
-	render: function (render_method) {
+	render: function (method) {
 		if (method == '3D' && this.has('3D')) {
 			if (!this.parent) throw 'No parent set for entity';
 			// transform the entity
@@ -380,7 +382,10 @@ Crafty.c('Render', {
 					rd.elem.style.top = '0px';
 					rd.elem.style.left = '0px';
 					rd.elem.style.width = this.w+'px';
-					rd.elem.style.height = this.l+'px';
+					rd.elem.style.height = this.h+'px';
+					if (this.has('Sprite')) {
+						rd.elem.style.background = "url('" + this.__image + "') no-repeat -" + this.__coord[0] + "px -" + this.__coord[1] + "px";
+					}
 					rd.changed = true;
 					this.parent.renderElement.appendChild(rd.elem);
 				}
@@ -423,7 +428,7 @@ Crafty.c('Render', {
 					for (var i in rd.transforms) {
 						str += i+'('+rd.transforms[i]+')' ;
 					}
-					rd.elem.style[support.prefix + "Transform"] = str;
+					rd.elem.style[Crafty.support.prefix + "Transform"] = str;
 				}
 				
 			}
