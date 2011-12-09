@@ -248,8 +248,33 @@ Crafty.c('Camera', {
 		return this.parent.get('Render');
 	},
 	
+	/**
+	 * gets the vector between the camera and the target,
+	 * then calculates the needed transforms to manipulate the world
+	 * to give the appearance that we're rendering from the camera's view.
+	 
+	 * camera transforms happen in 3 steps:
+	 * translate/set origin to target's coords
+	 * rotate world
+	 * translate so viewpoint is on camera
+	 */
 	_calcTransforms: function () {
-		return {};
+		var vector = this.sub(this.target),
+			trans = {};
+		
+		trans.origin = {};
+		trans.origin.x = this.target.x;
+		trans.origin.y = this.target.y;
+		trans.origin.z = this.target.z;
+		trans.form = [];
+		trans.form.push('translate3d('+this.target.x+', '+this.target.y+', '+(-this.target.z)+')');
+		// figure out the z rotation based on the vector
+		
+		// figure out the x rotation based on the vector
+		
+		// figure out the translation needed based on the vector
+		
+		return trans;
 	},
 	
 	/**
@@ -287,6 +312,8 @@ Crafty.c('Camera', {
 				
 				var transforms = this._calcTransforms();
 				// do things with them
+				// its possible to chain transforms together,
+				// translateX() rotateZ() translateX() does them in that order!
 				
 				var objs = this._getObjectsInView();
 				for (var i in objs) {
