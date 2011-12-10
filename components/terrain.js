@@ -268,9 +268,14 @@ Crafty.c('Camera', {
 		trans.origin.z = this.target.z;
 		trans.form = [];
 		trans.form.push('translate3d('+this.target.x+', '+this.target.y+', '+(-this.target.z)+')');
-		// figure out the z rotation based on the vector
 		
 		// figure out the x rotation based on the vector
+		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z);
+		trans.form.push('rotateX('+(Crafty.math.radToDeg(Math.asin(vector.z/hyp)))+')');
+		
+		// figure out the z rotation based on the vector
+		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y);
+		trans.form.push('rotateZ('+Crafty.math.radToDeg(Math.atan2(vector.y, vector.x) - Math.atan2(hyp, 0))+')');
 		
 		// figure out the translation needed based on the vector
 		
