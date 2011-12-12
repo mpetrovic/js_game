@@ -4,10 +4,13 @@
 	<style>
 		body {
 			-webkit-perspective: 1000;
+			position: relative;
 		}
 	
 		#world {
-			position: relative;
+			position: absolute;
+			top: 50%;
+			right: 50%;
 		}
 		
 		#world div {
@@ -46,7 +49,7 @@
 	</script>
 </head>
 <body>
-	<div id="world" style="-webkit-transform: translateZ(500px) rotateX(63deg) rotateZ(45deg); -webkit-transform-origin: 0px 0px 0px; position: absolute; top: 400px; left: 400px; -webkit-transform-style: preserve-3d;">
+	<div id="world" style="-webkit-transform: translateZ(500px) rotateX(63deg) rotateZ(45deg); -webkit-transform-origin: 0px 0px 0px; -webkit-transform-style: preserve-3d;">
 		<div style="left: -500px; width: 1000px; height: 2px; background-color: black;"></div>
 		<div style="top: -500px; width: 2px; height: 1000px; background-color: black;"></div>
 		<div style="top: -500px; width: 2px; height: 1000px; background-color: black; -webkit-transform: rotateX(90deg);"></div>

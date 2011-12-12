@@ -267,11 +267,12 @@ Crafty.c('Camera', {
 		trans.origin.y = this.target.y;
 		trans.origin.z = this.target.z;
 		trans.form = [];
+		trans.form.push('translateZ(1000px)');	// move the browser's viewpoint to 0,0,0
 		trans.form.push('translate3d('+this.target.x+', '+this.target.y+', '+(-this.target.z)+')');
 		
 		// figure out the x rotation based on the vector
 		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z);
-		trans.form.push('rotateX('+(Crafty.math.radToDeg(Math.asin(vector.z/hyp)))+')');
+		trans.form.push('rotateX('+(-1*Crafty.math.radToDeg(Math.asin(vector.z/hyp)))+')');
 		
 		// figure out the z rotation based on the vector
 		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y);
@@ -300,7 +301,7 @@ Crafty.c('Camera', {
 				if (typeof this.parent.renderElement == 'undefined') {
 					par = this.parent.renderElement = document.createElement('div');
 					par.style.transformStyle = par.style[Crafty.support.prefix+"TransformStyle"] = 'preserve-3d';
-					par.style.position = 'relative';
+					par.style.position = 'absolute';
 					par.id = "CraftyTerrain";
 				}
 				
@@ -311,8 +312,10 @@ Crafty.c('Camera', {
 					world = par;
 				}
 				else if (!world) {
-					Crafty.stage.inner.appendChild(par);
-					Crafty.stage.inner.style.perspective = Crafty.stage.inner.style[Crafty.support.prefix+"Perspective"] = '1000';
+					par.style.top = '50%';
+					par.style.left = '50%';
+					Crafty.stage.elem.appendChild(par);
+					Crafty.stage.elem.style.perspective = Crafty.stage.elem.style[Crafty.support.prefix+"Perspective"] = '1000';
 				}
 				
 				var transforms = this._calcTransforms();
