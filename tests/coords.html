@@ -2,6 +2,10 @@
 <head>
 	<title>css 3d transforms</title>
 	<style>
+		body {
+			-webkit-perspective: 1000;
+		}
+	
 		#world {
 			position: relative;
 		}
@@ -12,7 +16,7 @@
 	</style>
 	<script>
 		window.onload = function () {
-			var world = document.getElementById('world'), dragging = false, old = {}, actual = {x: 63, z: 45};
+			var world = document.getElementById('world'), dragging = false, old = {}, actual = {x: 63, z: 45, ztrans: 500};
 			document.body.addEventListener('mousedown', function (e) {
 				dragging = true;
 				old.x = e.clientX;
@@ -21,21 +25,28 @@
 			document.body.addEventListener('mousemove', function (e) {
 				if (!dragging) return;
 				var diff = {x: e.clientX - old.x, y: e.clientY - old.y};
-				console.log(diff.x+' '+diff.y);
 				old.x = e.clientX;
 				old.y = e.clientY;
 				actual.x += diff.y*1;
 				actual.z += diff.x*1;
-				world.style.webkitTransform = 'rotateX('+actual.x+'deg) rotateZ('+actual.z+'deg)';
+				update();
 			}, false);
 			document.body.addEventListener('mouseup', function (e) {
 				dragging = false;
 			}, false);
+			document.body.addEventListener('mousewheel', function (e) {
+				actual.ztrans += e.wheelDelta/10;
+				update();
+			}, false);
+			
+			function update() {
+				world.style.webkitTransform = 'translateZ('+actual.ztrans+'px) rotateX('+actual.x+'deg) rotateZ('+actual.z+'deg)';
+			}
 		};
 	</script>
 </head>
 <body>
-	<div id="world" style="-webkit-transform: rotateX(63deg) rotateZ(45deg); -webkit-transform-origin: 0px 0px 0px; position: absolute; top: 400px; left: 400px; -webkit-transform-style: preserve-3d;">
+	<div id="world" style="-webkit-transform: translateZ(500px) rotateX(63deg) rotateZ(45deg); -webkit-transform-origin: 0px 0px 0px; position: absolute; top: 400px; left: 400px; -webkit-transform-style: preserve-3d;">
 		<div style="left: -500px; width: 1000px; height: 2px; background-color: black;"></div>
 		<div style="top: -500px; width: 2px; height: 1000px; background-color: black;"></div>
 		<div style="top: -500px; width: 2px; height: 1000px; background-color: black; -webkit-transform: rotateX(90deg);"></div>
