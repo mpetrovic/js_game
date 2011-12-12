@@ -17,12 +17,14 @@ Crafty.c('Terrain', {
 	_floors: null,
 	_walls: null,
 	_hash: null,
+	_cameras: null,
 	
 	init: function () {
 		this.requires('3D');
 		this._objects = [];
 		this._floors = [];
 		this._walls = [];
+		this._cameras = {};
 	},
 	
 	/**
@@ -81,14 +83,13 @@ Crafty.c('Terrain', {
 	* their own z-axis
 	*/
 	addFloor: function (x, y, w, h, z, texture, tex_off_x, tex_off_y) {
-		var floor = Crafty.e('3D, Collides, Render, '+texture).setParent(this).attr({
+		var floor = Crafty.e('3D, Collides, Render, Floor, '+texture).setParent(this).attr({
 			x: x,
 			y: y,
 			w: w,
 			h: h,
 			z: z
 		});
-		this._floors.push(floor);
 		this._objects.push(floor);
 		return this;
 	},
@@ -110,16 +111,33 @@ Crafty.c('Terrain', {
 	 * Walls are collision surfaces. Mobile objects can not clip into
 	 * them unless they have no_clip set. 
 	 */
-	addWall: function (facing, l, h, z, texture) {
-		var wall = Crafty.e('3D, Collides, Render, '+texture).setParent(this).attr({
-			w: l,
+	addWall: function (x, y, z, facing, w, h, texture) {
+		var wall = Crafty.e('3D, Collides, Render, Wall, '+texture).setParent(this).attr({
+			x: x,
+			y: y,
+			z: z + h/2,
+			w: w,
 			h: h,
 			z: z,
 			rZ: facing,
 			rX: 90,
 		});
-		this._walls.push(wall);
 		this._objects.push(wall);
+		return this;
+	},
+	
+	addDoodad: function (x, y, z, w, l, h, texture, collides) {
+		var doodad = Crafty.e('3D, Render, Doodad, '+texture).setParent(this).attr({
+			x: x,
+			y: y,
+			z: z,
+			w: w,
+			l: l,
+			h: h,
+		});
+		if (collides)
+			doodad.requires('Collides');
+		this._objects.push();
 		return this;
 	},
 });
@@ -208,7 +226,6 @@ Crafty.c('Camera', {
 		this.requires('3D');
 		this.target = Crafty.e('3D');
 		_transforms = {};
-		this._calcTransforms();
 	},
 	
 	Camera: function (type, parent) {
@@ -225,6 +242,8 @@ Crafty.c('Camera', {
 	 * Looks at a point or an entity. Whichever
 	 */
 	lookAt: function (obj) {
+		this.target.attr({x: obj.x, y: obj.y, z: obj.z});
+		return this;
 	},
 	
 	/**
@@ -235,7 +254,7 @@ Crafty.c('Camera', {
 	 * Moves the camera closer to or farther from the target
 	 */
 	zoom: function (amt) {
-		
+		return this;
 	},
 	
 	/**
@@ -268,17 +287,18 @@ Crafty.c('Camera', {
 		trans.origin.z = this.target.z;
 		trans.form = [];
 		trans.form.push('translateZ(1000px)');	// move the browser's viewpoint to 0,0,0
-		trans.form.push('translate3d('+this.target.x+', '+this.target.y+', '+(-this.target.z)+')');
+		trans.form.push('translate3d('+this.target.x+'px, '+this.target.y+'px, '+(-this.target.z)+'px)');
 		
 		// figure out the x rotation based on the vector
 		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z);
-		trans.form.push('rotateX('+(-1*Crafty.math.radToDeg(Math.asin(vector.z/hyp)))+')');
+		trans.form.push('rotateX('+(90 + Crafty.math.radToDeg(Math.asin(vector.z/hyp)))+'deg)');
 		
 		// figure out the z rotation based on the vector
 		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y);
-		trans.form.push('rotateZ('+Crafty.math.radToDeg(Math.atan2(vector.y, vector.x) - Math.atan2(hyp, 0))+')');
+		trans.form.push('rotateZ('+(Crafty.math.radToDeg(Math.atan2(vector.y, vector.x) - Math.atan2(hyp, 0))-90)+'deg)');
 		
 		// figure out the translation needed based on the vector
+		trans.form.push('translate3d('+vector.x+'px, '+vector.y+'px, '+vector.z+'px)');
 		
 		return trans;
 	},
@@ -297,10 +317,10 @@ Crafty.c('Camera', {
 		
 		if (this.type == '3D') {
 			if (Crafty.support.css3dtransform) {
-				var par = this.parent.renderElement;
+				var par = this.parent.renderElement, pref = Crafty.support.prefix;
 				if (typeof this.parent.renderElement == 'undefined') {
 					par = this.parent.renderElement = document.createElement('div');
-					par.style.transformStyle = par.style[Crafty.support.prefix+"TransformStyle"] = 'preserve-3d';
+					par.style.transformStyle = par.style[pref+"TransformStyle"] = 'preserve-3d';
 					par.style.position = 'absolute';
 					par.id = "CraftyTerrain";
 				}
@@ -315,19 +335,19 @@ Crafty.c('Camera', {
 					par.style.top = '50%';
 					par.style.left = '50%';
 					Crafty.stage.elem.appendChild(par);
-					Crafty.stage.elem.style.perspective = Crafty.stage.elem.style[Crafty.support.prefix+"Perspective"] = '1000';
+					Crafty.stage.elem.style.perspective = Crafty.stage.elem.style[pref+"Perspective"] = '1000';
 				}
 				
 				var transforms = this._calcTransforms();
 				// do things with them
 				// its possible to chain transforms together,
 				// translateX() rotateZ() translateX() does them in that order!
+				par.style.transformOrigin = par.style[pref+"TransformOrigin"] = transforms.origin.x+"px "+transforms.origin.y+"px "+transforms.origin.z+"px";
+				par.style.transform = par.style[pref+"Transform"] = transforms.form.join(' ');
 				
 				var objs = this._getObjectsInView();
 				for (var i in objs) {
-					if (objs[i].has('Render')) {
-						objs[i].render(this.type);
-					}
+					objs[i].render(this.type);
 				}
 			}
 		}
@@ -435,8 +455,6 @@ Crafty.c('Render', {
 					// default origin is w/2, h/2
 					// first step is matching the element's 0,0 to the world's 0,0. This just makes things easier. 
 					// this is different from the transform origin
-					rd.elem.style.top = '0px'
-					rd.elem.style.left = '0px'
 					
 					// the position will need to be offset if any rotation on X or Y has happened
 					var offset = {x:0, y:0, z:0};
@@ -465,7 +483,7 @@ Crafty.c('Render', {
 					for (var i in rd.transforms) {
 						str += i+'('+rd.transforms[i]+')' ;
 					}
-					rd.elem.style[Crafty.support.prefix + "Transform"] = str;
+					rd.elem.style.transform = rd.elem.style[Crafty.support.prefix + "Transform"] = str;
 				}
 				
 			}
