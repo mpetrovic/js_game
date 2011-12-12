@@ -115,7 +115,7 @@ Crafty.c('Terrain', {
 		var wall = Crafty.e('3D, Collides, Render, Wall, '+texture).setParent(this).attr({
 			x: x,
 			y: y,
-			z: z + h/2,
+			z: z,
 			w: w,
 			h: h,
 			z: z,
@@ -466,8 +466,8 @@ Crafty.c('Render', {
 							tilt = this['r'+axis],
 							compl = 90 - tilt,
 							hyp = (axis=='X')?this.h/2:this.w/2;
-						offset.z = Math.sin(Crafty.math.degToRad(compl)) * hyp;
-						offset[axis.toLowerCase()] = (Math.sin(Crafty.math.degToRad(tilt)) * hyp)*-1;
+						offset.z = Math.sin(Crafty.math.degToRad(tilt)) * hyp;
+						offset[axis.toLowerCase()] = (Math.sin(Crafty.math.degToRad(tilt)) * -hyp);
 					}
 					rd.transforms.translateX = this.x + offset.x + 'px';
 					rd.transforms.translateY = this.y + offset.y + 'px';
