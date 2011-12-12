@@ -299,7 +299,7 @@ Crafty.c('Camera', {
 				var par = this.parent.renderElement;
 				if (typeof this.parent.renderElement == 'undefined') {
 					par = this.parent.renderElement = document.createElement('div');
-					par.style[Crafty.support.prefix+"TransformStyle"] = 'preserve-3d';
+					par.style.transformStyle = par.style[Crafty.support.prefix+"TransformStyle"] = 'preserve-3d';
 					par.style.position = 'relative';
 					par.id = "CraftyTerrain";
 				}
@@ -312,7 +312,7 @@ Crafty.c('Camera', {
 				}
 				else if (!world) {
 					Crafty.stage.inner.appendChild(par);
-					Crafty.stage.inner.style[Crafty.support.prefix+"Perspective"] = '1000';
+					Crafty.stage.inner.style.perspective = Crafty.stage.inner.style[Crafty.support.prefix+"Perspective"] = '1000';
 				}
 				
 				var transforms = this._calcTransforms();
@@ -366,16 +366,18 @@ Crafty.c('Collides', {
 		if (this.has('3D') && this.parent) {
 			// check the parent's HashMap then check against individual entities for collision
 			
-			if (collide)
+			if (collide) {
 				this.trigger('OnCollide', collide, SAT);
 				collide.trigger('OnCollide', this, SAT);
+			}
 		}
 		else if (this.has('2D')) {
 			// check HashMap, then individual entities
 			
-			if (collide)
+			if (collide) {
 				this.trigger('OnCollide', collide, SAT);
 				collide.trigger('OnCollide', this, SAT);
+			}
 		}
 	},
 });
