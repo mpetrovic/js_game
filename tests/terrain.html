@@ -6,12 +6,12 @@
 	<script type="text/javascript">
 		window.onload = function() {
 			Crafty.init();
-			Crafty.sprite(50, 50, '../images/walker_tank_05.jpg', {tank1: [0, 0], tank2: [1, 0], tank3: [2, 0]});
+			Crafty.sprite(150, 150, '../images/walker_tank_05.jpg', {tank1: [0, 0], tank2: [1, 0], tank3: [2, 0]});
 			var terr = Crafty.e('Terrain');
-			terr.addFloor(0, 0, 500, 500, 0, 'tank1');
-			terr.addFloor(500, 0, 500, 500, 0, 'tank2');
-			terr.addWall(0, 0, 0, 90, 500, 500, 'tank3');
-			var cam = Crafty.e('Camera').Camera('3D', terr).attr({x: 250, y: 250, z: 250}).lookAt({x: 250, y: 0, z: 0});
+			terr.addFloor(0, 0, 300, 300, 0, 'tank1');
+			terr.addFloor(300, 0, 300, 300, 0, 'tank2');
+			terr.addWall(0, 0, 0, 90, 300, 300, 'tank3');
+			var cam = Crafty.e('Camera').Camera('3D', terr).attr({x: 250, y: -500, z: 400}).lookAt({x: 0, y: 0, z: 0});
 			cam.active = true;
 			cam._render();
 		}

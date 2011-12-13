@@ -279,7 +279,7 @@ Crafty.c('Camera', {
 	 */
 	_calcTransforms: function () {
 		var vector = this.sub(this.target),
-			trans = {};
+			trans = {}, hyp;
 		
 		trans.origin = {};
 		trans.origin.x = this.target.x;
@@ -287,7 +287,7 @@ Crafty.c('Camera', {
 		trans.origin.z = this.target.z;
 		trans.form = [];
 		trans.form.push('translateZ(1000px)');	// move the browser's viewpoint to 0,0,0
-		trans.form.push('translate3d('+this.target.x+'px, '+this.target.y+'px, '+(-this.target.z)+'px)');
+		trans.form.push('translate3d('+(-1*this.target.x)+'px, '+(-1*this.target.y)+'px, '+(-1*this.target.z)+'px)');
 		
 		// figure out the x rotation based on the vector
 		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z);
@@ -295,7 +295,7 @@ Crafty.c('Camera', {
 		
 		// figure out the z rotation based on the vector
 		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y);
-		trans.form.push('rotateZ('+(Crafty.math.radToDeg(Math.atan2(vector.y, vector.x) - Math.atan2(hyp, 0))-90)+'deg)');
+		trans.form.push('rotateZ('+(Crafty.math.radToDeg(Math.atan2(-vector.x, -vector.y)))+'deg)');
 		
 		// figure out the translation needed based on the vector
 		trans.form.push('translate3d('+vector.x+'px, '+vector.y+'px, '+vector.z+'px)');
