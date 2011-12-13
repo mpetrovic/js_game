@@ -294,7 +294,10 @@ Crafty.c('Camera', {
 		trans.form.push('rotateX('+(90 + Crafty.math.radToDeg(Math.asin(vector.z/hyp)))+'deg)');
 		
 		// figure out the z rotation based on the vector
-		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y);
+		// this was tricky.
+		// things to remember: 
+		// the angle we want to measure has the camera at 0,0. so the vector needs to be reversed.
+		// the coord grid is 90 degrees from what i expected, so x and y needed to be switched.
 		trans.form.push('rotateZ('+(Crafty.math.radToDeg(Math.atan2(-vector.x, -vector.y)))+'deg)');
 		
 		// figure out the translation needed based on the vector
