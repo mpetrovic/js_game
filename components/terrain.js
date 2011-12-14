@@ -257,9 +257,9 @@ Crafty.c('Camera', {
 	 */
 	zoom: function (amt) {
 		var vect = this.sub(this.target);
-		this.x = this.x + vect.x/amt;
-		this.y = this.y + vect.y/amt;
-		this.z = this.z + vect.z/amt;
+		this.x = this.target.x + vect.x/amt;
+		this.y = this.target.y + vect.y/amt;
+		this.z = this.target.z + vect.z/amt;
 		this.changed = true;
 		return this;
 	},
