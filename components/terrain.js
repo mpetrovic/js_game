@@ -233,9 +233,6 @@ Crafty.c('Camera', {
 		this.type = type;
 		this.setParent(parent);
 		this.target.setParent(parent);
-		if (type == '3D' && (!Crafty.support.css3dtransform && !Crafty.support.webgl)) {
-			this.type = 'overhead';
-		}
 		return this;
 	},
 	
@@ -256,7 +253,7 @@ Crafty.c('Camera', {
 	 * Moves the camera closer to or farther from the target
 	 */
 	zoom: function (amt) {
-		var vect = this.sub(this.target);
+		var vect = this.target.sub(this);
 		this.x = this.target.x + vect.x/amt;
 		this.y = this.target.y + vect.y/amt;
 		this.z = this.target.z + vect.z/amt;
@@ -323,43 +320,52 @@ Crafty.c('Camera', {
 	 * This should be the very very very last step in an EnterFrame, to ensure all changes have been made before drawing anything
 	 */
 	_render: function () {
-		if (!this.active || !this.changed) return;
+		if (!this.active) return;
 		
-		if (this.type == '3D') {
-			if (Crafty.support.css3dtransform) {
-				var par = this.parent.renderElement, pref = Crafty.support.prefix;
-				if (typeof this.parent.renderElement == 'undefined') {
-					par = this.parent.renderElement = document.createElement('div');
-					par.style.transformStyle = par.style[pref+"TransformStyle"] = 'preserve-3d';
-					par.style.position = 'absolute';
-					par.id = "CraftyTerrain";
+		if (this.changed) {
+			if (this.type == '3D') {
+				if (Crafty.support.css3dtransform) {
+					var par = this.parent.renderElement, pref = Crafty.support.prefix;
+					if (typeof this.parent.renderElement == 'undefined') {
+						par = this.parent.renderElement = document.createElement('div');
+						par.style.transformStyle = par.style[pref+"TransformStyle"] = 'preserve-3d';
+						par.style.position = 'absolute';
+						par.id = "CraftyTerrain";
+					}
+					
+					var world = document.getElementById("CraftyTerrain");
+					if (world && world !== par) {
+						world.parentNode.appendChild(par);
+						world.parentNode.removeChild(world);
+						world = par;
+					}
+					else if (!world) {
+						par.style.top = '50%';
+						par.style.left = '50%';
+						Crafty.stage.elem.appendChild(par);
+						Crafty.stage.elem.style.perspective = Crafty.stage.elem.style[pref+"Perspective"] = '1000';
+					}
+					
+					var transforms = this._calcTransforms();
+					// do things with them
+					// its possible to chain transforms together,
+					// translateX() rotateZ() translateX() does them in that order!
+					par.style.transformOrigin = par.style[pref+"TransformOrigin"] = transforms.origin.x+"px "+transforms.origin.y+"px "+transforms.origin.z+"px";
+					par.style.transform = par.style[pref+"Transform"] = transforms.form.join(' ');
+					
 				}
-				
-				var world = document.getElementById("CraftyTerrain");
-				if (world && world !== par) {
-					world.parentNode.appendChild(par);
-					world.parentNode.removeChild(world);
-					world = par;
+				else if (Crafty.support.webgl) {
 				}
-				else if (!world) {
-					par.style.top = '50%';
-					par.style.left = '50%';
-					Crafty.stage.elem.appendChild(par);
-					Crafty.stage.elem.style.perspective = Crafty.stage.elem.style[pref+"Perspective"] = '1000';
+				else if (Crafty.support.svg) {
 				}
-				
-				var transforms = this._calcTransforms();
-				// do things with them
-				// its possible to chain transforms together,
-				// translateX() rotateZ() translateX() does them in that order!
-				par.style.transformOrigin = par.style[pref+"TransformOrigin"] = transforms.origin.x+"px "+transforms.origin.y+"px "+transforms.origin.z+"px";
-				par.style.transform = par.style[pref+"Transform"] = transforms.form.join(' ');
-				
-				var objs = this._getObjectsInView();
-				for (var i in objs) {
-					objs[i].render(this.type);
+				else if (Crafty.support.vml) {
 				}
 			}
+		}
+		
+		var objs = this._getObjectsInView();
+		for (var i in objs) {
+			objs[i].render(this.type);
 		}
 		
 		this.changed = false;
@@ -428,6 +434,8 @@ Crafty.c('Render', {
 	
 	render: function (method) {
 		if (!this.changed) return;
+		var copy = this.clone();
+		this.trigger('PreRender', clone);
 	
 		if (method == '3D' && this.has('3D')) {
 			if (!this.parent) throw 'No parent set for entity';
