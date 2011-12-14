@@ -164,6 +164,7 @@ Crafty.c('3D', {
 	h: 0,
 	parent: null,
 	origin: null,
+	changed: true,
 	
 	init: function() {
 		this.origin = {x: 0, y: 0, z: 0};
@@ -243,6 +244,7 @@ Crafty.c('Camera', {
 	 */
 	lookAt: function (obj) {
 		this.target.attr({x: obj.x, y: obj.y, z: obj.z});
+		this.changed = true;
 		return this;
 	},
 	
@@ -254,6 +256,11 @@ Crafty.c('Camera', {
 	 * Moves the camera closer to or farther from the target
 	 */
 	zoom: function (amt) {
+		var vect = this.sub(this.target);
+		this.x = this.x + vect.x/amt;
+		this.y = this.y + vect.y/amt;
+		this.z = this.z + vect.z/amt;
+		this.changed = true;
 		return this;
 	},
 	
@@ -316,7 +323,7 @@ Crafty.c('Camera', {
 	 * This should be the very very very last step in an EnterFrame, to ensure all changes have been made before drawing anything
 	 */
 	_render: function () {
-		if (!this.active) return;
+		if (!this.active || !this.changed) return;
 		
 		if (this.type == '3D') {
 			if (Crafty.support.css3dtransform) {
@@ -354,6 +361,8 @@ Crafty.c('Camera', {
 				}
 			}
 		}
+		
+		this.changed = false;
 	},
 });
 
@@ -418,6 +427,8 @@ Crafty.c('Render', {
 	_renderData: null,
 	
 	render: function (method) {
+		if (!this.changed) return;
+	
 		if (method == '3D' && this.has('3D')) {
 			if (!this.parent) throw 'No parent set for entity';
 			// transform the entity
@@ -503,5 +514,7 @@ Crafty.c('Render', {
 			// there's little difference between this view and using the standard 2D component.
 			// except there should be some handling of Z levels.
 		}
+		
+		this.changed = false;
 	},
 });
