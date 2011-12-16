@@ -82,12 +82,12 @@ Crafty.c('Terrain', {
 	* Floors are collision surfaces. Any mobile object will be on the highest floor without going over 
 	* their own z-axis
 	*/
-	addFloor: function (x, y, w, h, z, texture, tex_off_x, tex_off_y) {
+	addFloor: function (x, y, w, l, z, texture, tex_off_x, tex_off_y) {
 		var floor = Crafty.e('3D, Collides, Render, Floor, '+texture).setParent(this).attr({
 			x: x,
 			y: y,
 			w: w,
-			h: h,
+			l: l,
 			z: z
 		});
 		this._objects.push(floor);
@@ -117,10 +117,10 @@ Crafty.c('Terrain', {
 			y: y,
 			z: z,
 			w: w,
-			h: h,
+			l: h,
 			z: z,
 			rZ: facing,
-			rX: 90,
+			rX: -90,
 		});
 		this._objects.push(wall);
 		return this;
@@ -137,7 +137,7 @@ Crafty.c('Terrain', {
 		});
 		if (collides)
 			doodad.requires('Collides');
-		this._objects.push();
+		this._objects.push(doodad);
 		return this;
 	},
 });
@@ -346,7 +346,7 @@ Crafty.c('Camera', {
 						Crafty.stage.elem.style.perspective = Crafty.stage.elem.style[pref+"Perspective"] = '1000';
 					}
 					
-					var transforms = this._calcTransforms();
+					var transforms = this.parent.transforms = this._calcTransforms();
 					// do things with them
 					// its possible to chain transforms together,
 					// translateX() rotateZ() translateX() does them in that order!
@@ -431,11 +431,12 @@ Crafty.c('Collides', {
  */
 Crafty.c('Render', {
 	_renderData: null,
+	changed: true,
 	
 	render: function (method) {
 		if (!this.changed) return;
 		var copy = this.clone();
-		this.trigger('PreRender', clone);
+		this.trigger('PreRender', copy);
 	
 		if (method == '3D' && this.has('3D')) {
 			if (!this.parent) throw 'No parent set for entity';
@@ -458,10 +459,10 @@ Crafty.c('Render', {
 				if (rd.elem == null) {
 					rd.elem = document.createElement('div');
 					rd.elem.style.position = 'absolute';
-					rd.elem.style.top = '0px';
-					rd.elem.style.left = '0px';
-					rd.elem.style.width = this.w+'px';
-					rd.elem.style.height = this.h+'px';
+					rd.elem.style.top = (-copy.l/2)+'px';
+					rd.elem.style.left = (-copy.w/2)+'px';
+					rd.elem.style.width = copy.w+'px';
+					rd.elem.style.height = copy.l+'px';
 					if (this.has('Sprite')) {
 						rd.elem.style.background = "url('" + this.__image + "') no-repeat -" + this.__coord[0] + "px -" + this.__coord[1] + "px";
 					}
@@ -480,26 +481,24 @@ Crafty.c('Render', {
 					
 					// the position will need to be offset if any rotation on X or Y has happened
 					var offset = {x:0, y:0, z:0};
-					if (this.rX && this.rY) {
+					if (copy.rX && copy.rY) {
 						// some special math I don't know yet
 					}
-					else if (this.rX || this.rY) {
-						var axis = this.rX?'X':'Y',
-							tilt = this['r'+axis],
+					else if (copy.rX || copy.rY) {
+						var axis = copy.rX?'X':'Y',
+							tilt = copy['r'+axis],
 							compl = 90 - tilt,
-							hyp = (axis=='X')?this.h/2:this.w/2;
-						offset.z = Math.sin(Crafty.math.degToRad(tilt)) * hyp;
-						offset[axis.toLowerCase()] = (Math.sin(Crafty.math.degToRad(tilt)) * -hyp);
+							hyp = (axis=='X')?copy.l/2:copy.w/2;
+						offset.z = Math.sin(Crafty.math.degToRad(tilt)) * -hyp;
+						//offset[axis.toLowerCase()] = (Math.sin(Crafty.math.degToRad(tilt)) * -hyp);
 					}
-					rd.transforms.translateX = this.x + offset.x + 'px';
-					rd.transforms.translateY = this.y + offset.y + 'px';
-					rd.transforms.translateZ = this.z + offset.z + 'px';
-					rd.transforms.rotateZ = this.rZ+'deg';
-					rd.transforms.rotateX = this.rX+'deg';
-					rd.transforms.rotateY = this.rY+'deg';
-					rd.transforms.scaleX = this.sX;
-					rd.transforms.scaleY = this.sY;
-					rd.transforms.scaleZ = this.sZ;
+					rd.transforms.translate3d = (copy.x + offset.x) + 'px, ' +  (copy.y + offset.y) + 'px, ' + (copy.z + offset.z) + 'px';
+					rd.transforms.rotateZ = copy.rZ+'deg';
+					rd.transforms.rotateX = copy.rX+'deg';
+					rd.transforms.rotateY = copy.rY+'deg';
+					rd.transforms.scaleX = copy.sX;
+					rd.transforms.scaleY = copy.sY;
+					rd.transforms.scaleZ = copy.sZ;
 					
 					var str = '';
 					for (var i in rd.transforms) {
@@ -524,5 +523,32 @@ Crafty.c('Render', {
 		}
 		
 		this.changed = false;
+	},
+});
+
+
+/**
+ * Defines an entity that always faces the camera
+ */
+Crafty.c("Doodad", {
+	init: function () {
+		this.bind('PreRender', this._prerender);
+	},
+
+	_prerender: function (data) {
+		data.l = data.h;
+		data.rX = -90;
+		data.rY = 0;
+		
+		var trans = this.parent.transforms.form,
+			reg = /rotateZ\(([-]?[\d\.]*)deg\)/,
+			i, matches;
+	
+		for (i in trans) {
+			if (matches = reg.exec(trans[i])) {
+				data.rZ = -1 * Number(matches[1]);
+				break;
+			}
+		}
 	},
 });
