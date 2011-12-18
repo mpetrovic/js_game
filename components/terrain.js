@@ -202,10 +202,70 @@ Crafty.c('3D', {
 			this.__defineGetter__('alpha', function() { return this._alpha });
 		}
 		else if (Crafty.support.defineProperty) {
+			Object.defineProperty(this, 'x', { set: function(v) { this_x = v; this.changed = true; this.trigger('Moved', 'x', v); }, get: function() { return this._x; }, configurable:true });
+			Object.defineProperty(this, 'y', { set: function(v) { this_y = v; this.changed = true; this.trigger('Moved', 'y', v); }, get: function() { return this._y; }, configurable:true });
+			Object.defineProperty(this, 'z', { set: function(v) { this_z = v; this.changed = true; this.trigger('Moved', 'z', v); }, get: function() { return this._z; }, configurable:true });
+			Object.defineProperty(this, 'rX', { set: function(v) { this_rX = v; this.changed = true; this.trigger('Moved', 'rX', v); }, get: function() { return this._rX; }, configurable:true });
+			Object.defineProperty(this, 'rY', { set: function(v) { this_rY = v; this.changed = true; this.trigger('Moved', 'rY', v); }, get: function() { return this._rY; }, configurable:true });
+			Object.defineProperty(this, 'rZ', { set: function(v) { this_rZ = v; this.changed = true; this.trigger('Moved', 'rZ', v); }, get: function() { return this._rZ; }, configurable:true });
+			Object.defineProperty(this, 'sX', { set: function(v) { this_sX = v; this.changed = true; this.trigger('Moved', 'sX', v); }, get: function() { return this._sX; }, configurable:true });
+			Object.defineProperty(this, 'sY', { set: function(v) { this_sY = v; this.changed = true; this.trigger('Moved', 'sY', v); }, get: function() { return this._sY; }, configurable:true });
+			Object.defineProperty(this, 'sZ', { set: function(v) { this_sZ = v; this.changed = true; this.trigger('Moved', 'sZ', v); }, get: function() { return this._sZ; }, configurable:true });
+			Object.defineProperty(this, 'alpha', { set: function(v) { this_alpha = v; this.changed = true; this.trigger('Moved', 'alpha', v); }, get: function() { return this._alpha; }, configurable:true });
 		}
 		else {
 			// prerender check
 			this.bind('PreRender', function (copy) {
+				if (this.x != this._x) {
+					this._x = this.x;
+					this.changed = true;
+					this.trigger('Moved', 'x', this.x);
+				}
+				if (this.y != this._y) {
+					this._y = this.y;
+					this.changed = true;
+					this.trigger('Moved', 'y', this.y);
+				}
+				if (this.z != this._z) {
+					this._z = this.z;
+					this.changed = true;
+					this.trigger('Moved', 'z', this.z);
+				}
+				if (this.rX != this._rX) {
+					this._rX = this.rX;
+					this.changed = true;
+					this.trigger('Moved', 'rX', this.rX);
+				}
+				if (this.rY != this._rY) {
+					this._rY = this.rY;
+					this.changed = true;
+					this.trigger('Moved', 'rY', this.rY);
+				}
+				if (this.rZ != this._rZ) {
+					this._rZ = this.rZ;
+					this.changed = true;
+					this.trigger('Moved', 'rZ', this.rZ);
+				}
+				if (this.sX != this._sX) {
+					this._sX = this.sX;
+					this.changed = true;
+					this.trigger('Moved', 'sX', this.sX);
+				}
+				if (this.sY != this._sY) {
+					this._sY = this.sY;
+					this.changed = true;
+					this.trigger('Moved', 'sY', this.sY);
+				}
+				if (this.sZ != this._sZ) {
+					this._sZ = this.sZ;
+					this.changed = true;
+					this.trigger('Moved', 'sZ', this.sZ);
+				}
+				if (this.alpha != this._alpha) {
+					this._alpha = this.alpha;
+					this.changed = true;
+					this.trigger('Moved', 'alpha', this.alpha);
+				}
 			});
 		}
 	},
@@ -474,9 +534,9 @@ Crafty.c('Render', {
 	changed: true,
 	
 	render: function (method) {
-		if (!this.changed) return;
 		var copy = this.clone();
 		this.trigger('PreRender', copy);
+		if (!this.changed) return;
 	
 		if (method == '3D' && this.has('3D')) {
 			if (!this.parent) throw 'No parent set for entity';
