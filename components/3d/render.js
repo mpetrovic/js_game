@@ -14,10 +14,12 @@ Crafty.c('Render', {
 	
 		if (method == '3D' && this.has('3D')) {
 			this._getChanges();
-			var copy = this.clone();
-			this.trigger('PreRender', copy);
 			if (!this.changed) return;
 			if (!this.parent) throw 'No parent set for entity';
+			
+			// prerender stuff
+			var copy = this.clone();
+			this.trigger('PreRender', copy);
 			// transform the entity
 			
 			if (Crafty.support.css3dtransform) {
