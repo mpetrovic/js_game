@@ -60,16 +60,16 @@ Crafty.c('3D', {
 			this.__defineGetter__('alpha', function() { return this._alpha });
 		}
 		else if (Crafty.support.defineProperty) {
-			Object.defineProperty(this, 'x', { set: function(v) { this_x = v; this.changed = true; this.trigger('Moved', 'x', v); }, get: function() { return this._x; }, configurable:true });
-			Object.defineProperty(this, 'y', { set: function(v) { this_y = v; this.changed = true; this.trigger('Moved', 'y', v); }, get: function() { return this._y; }, configurable:true });
-			Object.defineProperty(this, 'z', { set: function(v) { this_z = v; this.changed = true; this.trigger('Moved', 'z', v); }, get: function() { return this._z; }, configurable:true });
-			Object.defineProperty(this, 'rX', { set: function(v) { this_rX = v; this.changed = true; this.trigger('Moved', 'rX', v); }, get: function() { return this._rX; }, configurable:true });
-			Object.defineProperty(this, 'rY', { set: function(v) { this_rY = v; this.changed = true; this.trigger('Moved', 'rY', v); }, get: function() { return this._rY; }, configurable:true });
-			Object.defineProperty(this, 'rZ', { set: function(v) { this_rZ = v; this.changed = true; this.trigger('Moved', 'rZ', v); }, get: function() { return this._rZ; }, configurable:true });
-			Object.defineProperty(this, 'sX', { set: function(v) { this_sX = v; this.changed = true; this.trigger('Moved', 'sX', v); }, get: function() { return this._sX; }, configurable:true });
-			Object.defineProperty(this, 'sY', { set: function(v) { this_sY = v; this.changed = true; this.trigger('Moved', 'sY', v); }, get: function() { return this._sY; }, configurable:true });
-			Object.defineProperty(this, 'sZ', { set: function(v) { this_sZ = v; this.changed = true; this.trigger('Moved', 'sZ', v); }, get: function() { return this._sZ; }, configurable:true });
-			Object.defineProperty(this, 'alpha', { set: function(v) { this_alpha = v; this.changed = true; this.trigger('Moved', 'alpha', v); }, get: function() { return this._alpha; }, configurable:true });
+			Object.defineProperty(this, 'x', { set: function(v) { this._x = v; this.changed = true; this.trigger('Moved', 'x', v); }, get: function() { return this._x; }, configurable:true });
+			Object.defineProperty(this, 'y', { set: function(v) { this._y = v; this.changed = true; this.trigger('Moved', 'y', v); }, get: function() { return this._y; }, configurable:true });
+			Object.defineProperty(this, 'z', { set: function(v) { this._z = v; this.changed = true; this.trigger('Moved', 'z', v); }, get: function() { return this._z; }, configurable:true });
+			Object.defineProperty(this, 'rX', { set: function(v) { this._rX = v; this.changed = true; this.trigger('Moved', 'rX', v); }, get: function() { return this._rX; }, configurable:true });
+			Object.defineProperty(this, 'rY', { set: function(v) { this._rY = v; this.changed = true; this.trigger('Moved', 'rY', v); }, get: function() { return this._rY; }, configurable:true });
+			Object.defineProperty(this, 'rZ', { set: function(v) { this._rZ = v; this.changed = true; this.trigger('Moved', 'rZ', v); }, get: function() { return this._rZ; }, configurable:true });
+			Object.defineProperty(this, 'sX', { set: function(v) { this._sX = v; this.changed = true; this.trigger('Moved', 'sX', v); }, get: function() { return this._sX; }, configurable:true });
+			Object.defineProperty(this, 'sY', { set: function(v) { this._sY = v; this.changed = true; this.trigger('Moved', 'sY', v); }, get: function() { return this._sY; }, configurable:true });
+			Object.defineProperty(this, 'sZ', { set: function(v) { this._sZ = v; this.changed = true; this.trigger('Moved', 'sZ', v); }, get: function() { return this._sZ; }, configurable:true });
+			Object.defineProperty(this, 'alpha', { set: function(v) { this._alpha = v; this.changed = true; this.trigger('Moved', 'alpha', v); }, get: function() { return this._alpha; }, configurable:true });
 		}
 	},
 	
@@ -167,5 +167,6 @@ Crafty.c('3D', {
 			this.changed = true;
 			this.trigger('Moved', 'alpha', this.alpha);
 		}
+		this.trigger('GetChanges');
 	}
 });

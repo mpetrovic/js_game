@@ -35,7 +35,7 @@ Crafty.c('Render', {
 				// doodad transforms:
 				//		position comes from object
 				//		rotation comes from camera
-				var rd = this._renderData = this._renderData || {elem: null, changed: true, transforms:{}};
+				var rd = this._renderData = this._renderData || {elem: null, transforms:{}};
 				if (rd.elem == null) {
 					rd.elem = document.createElement('div');
 					rd.elem.style.position = 'absolute';
@@ -46,47 +46,43 @@ Crafty.c('Render', {
 					if (this.has('Sprite')) {
 						rd.elem.style.background = "url('" + this.__image + "') no-repeat -" + this.__coord[0] + "px -" + this.__coord[1] + "px";
 					}
-					rd.changed = true;
 					this.parent.renderElement.appendChild(rd.elem);
 				}
 				
-				if (rd.changed) {
-					// calculate the transforms and put them in the transform object
-					// NOTES:
-					// ORDER MATTERS!
-					// translate first, then rotateZ, then rotateZ/Y. 
-					// default origin is w/2, h/2
-					// first step is matching the element's 0,0 to the world's 0,0. This just makes things easier. 
-					// this is different from the transform origin
-					
-					// the position will need to be offset if any rotation on X or Y has happened
-					var offset = {x:0, y:0, z:0};
-					if (copy.rX && copy.rY) {
-						// some special math I don't know yet
-					}
-					else if (copy.rX || copy.rY) {
-						var axis = copy.rX?'X':'Y',
-							tilt = copy['r'+axis],
-							compl = 90 - tilt,
-							hyp = (axis=='X')?copy.l/2:copy.w/2;
-						offset.z = Math.sin(Crafty.math.degToRad(tilt)) * -hyp;
-						//offset[axis.toLowerCase()] = (Math.sin(Crafty.math.degToRad(tilt)) * -hyp);
-					}
-					rd.transforms.translate3d = (copy.x + offset.x) + 'px, ' +  (copy.y + offset.y) + 'px, ' + (copy.z + offset.z) + 'px';
-					rd.transforms.rotateZ = copy.rZ+'deg';
-					rd.transforms.rotateX = copy.rX+'deg';
-					rd.transforms.rotateY = copy.rY+'deg';
-					rd.transforms.scaleX = copy.sX;
-					rd.transforms.scaleY = copy.sY;
-					rd.transforms.scaleZ = copy.sZ;
-					
-					var str = '';
-					for (var i in rd.transforms) {
-						str += i+'('+rd.transforms[i]+')' ;
-					}
-					rd.elem.style.transform = rd.elem.style[Crafty.support.prefix + "Transform"] = str;
-				}
+				// calculate the transforms and put them in the transform object
+				// NOTES:
+				// ORDER MATTERS!
+				// translate first, then rotateZ, then rotateX/Y. 
+				// default origin is w/2, h/2
+				// first step is matching the element's 0,0 to the world's 0,0. This just makes things easier. 
+				// this is different from the transform origin
 				
+				// the position will need to be offset if any rotation on X or Y has happened
+				var offset = {x:0, y:0, z:0};
+				if (copy.rX && copy.rY) {
+					// some special math I don't know yet
+				}
+				else if (copy.rX || copy.rY) {
+					var axis = copy.rX?'X':'Y',
+						tilt = copy['r'+axis],
+						compl = 90 - tilt,
+						hyp = (axis=='X')?copy.l/2:copy.w/2;
+					offset.z = Math.sin(Crafty.math.degToRad(tilt)) * -hyp;
+					//offset[axis.toLowerCase()] = (Math.sin(Crafty.math.degToRad(tilt)) * -hyp);
+				}
+				rd.transforms.translate3d = (copy.x + offset.x) + 'px, ' +  (copy.y + offset.y) + 'px, ' + (copy.z + offset.z) + 'px';
+				rd.transforms.rotateZ = copy.rZ+'deg';
+				rd.transforms.rotateX = copy.rX+'deg';
+				rd.transforms.rotateY = copy.rY+'deg';
+				rd.transforms.scaleX = copy.sX;
+				rd.transforms.scaleY = copy.sY;
+				rd.transforms.scaleZ = copy.sZ;
+				
+				var str = '';
+				for (var i in rd.transforms) {
+					str += i+'('+rd.transforms[i]+')' ;
+				}
+				rd.elem.style.transform = rd.elem.style[Crafty.support.prefix + "Transform"] = str;
 			}
 			else if (Crafty.support.webgl) {
 				// webgl stuff
