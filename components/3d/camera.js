@@ -79,22 +79,22 @@ Crafty.c('Camera', {
 		trans.origin.y = this.target.y;
 		trans.origin.z = this.target.z;
 		trans.form = [];
-		trans.form.push('translateZ(1000px)');	// move the browser's viewpoint to 0,0,0
-		trans.form.push('translate3d('+(-1*this.target.x)+'px, '+(-1*this.target.y)+'px, '+(-1*this.target.z)+'px)');
+		trans.form.push({op: 'translateZ', val: [1000]});	// move the browser's viewpoint to 0,0,0
+		trans.form.push({op: 'translate3d', val:[(-1*this.target.x), (-1*this.target.y), (-1*this.target.z)]});
 		
 		// figure out the x rotation based on the vector
 		hyp = Math.sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z);
-		trans.form.push('rotateX('+(90 + Crafty.math.radToDeg(Math.asin(vector.z/hyp)))+'deg)');
+		trans.form.push({op: 'rotateX', val:[(90 + Crafty.math.radToDeg(Math.asin(vector.z/hyp)))]});
 		
 		// figure out the z rotation based on the vector
 		// this was tricky.
 		// things to remember: 
 		// the angle we want to measure has the camera at 0,0. so the vector needs to be reversed.
 		// the coord grid is 90 degrees from what i expected, so x and y needed to be switched.
-		trans.form.push('rotateZ('+(Crafty.math.radToDeg(Math.atan2(-vector.x, -vector.y)))+'deg)');
+		trans.form.push({op: 'rotateZ', val:[(Crafty.math.radToDeg(Math.atan2(-vector.x, -vector.y)))]});
 		
 		// figure out the translation needed based on the vector
-		trans.form.push('translate3d('+vector.x+'px, '+vector.y+'px, '+vector.z+'px)');
+		trans.form.push({op: 'translate3d', val: [vector.x, vector.y, vector.z]});
 		
 		return trans;
 	},
@@ -114,7 +114,8 @@ Crafty.c('Camera', {
 		if (this.changed) {
 			if (this.type == '3D') {
 				if (Crafty.support.css3dtransform) {
-					var par = this.parent.renderElement, pref = Crafty.support.prefix;
+					var par = this.parent.renderElement, pref = Crafty.support.prefix, 
+					i, style = [], unit, j, rot = /rotate/i, mov = /translate/i, scl = /scale/i, str;
 					if (typeof this.parent.renderElement == 'undefined') {
 						par = this.parent.renderElement = document.createElement('div');
 						par.style.transformStyle = par.style[pref+"TransformStyle"] = 'preserve-3d';
@@ -140,7 +141,24 @@ Crafty.c('Camera', {
 					// its possible to chain transforms together,
 					// translateX() rotateZ() translateX() does them in that order!
 					par.style.transformOrigin = par.style[pref+"TransformOrigin"] = transforms.origin.x+"px "+transforms.origin.y+"px "+transforms.origin.z+"px";
-					par.style.transform = par.style[pref+"Transform"] = transforms.form.join(' ');
+					for (i in transforms.form) {
+						j = transforms.form[i];
+						if (j.op.search(mov) != -1) {
+							unit = 'px';
+						}
+						else if (j.op.search(rot) != -1) {
+							unit = 'deg';
+						}
+						else if (j.op.search(scl) != -1) {
+							unit = '';
+						}
+						
+						for (var m in j.val) {
+							j.val[m] =  = j.val[m]+unit;
+						}
+						style.push(j.op+'('+(j.val.join(' '))+unit+') ');
+					}
+					par.style.transform = par.style[pref+"Transform"] = style.join(' ');
 					
 				}
 				else if (Crafty.support.webgl) {
