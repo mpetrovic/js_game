@@ -43,7 +43,7 @@ Crafty.c('3D', {
 			this.__defineSetter__('w', function(v) { this._w = v; this.changed = true; this.trigger('Moved', 'w', v)});
 			this.__defineSetter__('l', function(v) { this._l = v; this.changed = true; this.trigger('Moved', 'l', v)});
 			this.__defineSetter__('h', function(v) { this._h = v; this.changed = true; this.trigger('Moved', 'h', v)});
-			this.__defineSetter__('alpha', function(v) { this._alpha = v; this.changed = true; this.trigger('Moved', 'alpha', v)});
+			this.__defineSetter__('alpha', function(v) { this._alpha = v; this.changed = true;});
 			
 			this.__defineGetter__('x', function() { return this._x });
 			this.__defineGetter__('y', function() { return this._y });
@@ -69,7 +69,10 @@ Crafty.c('3D', {
 			Object.defineProperty(this, 'sX', { set: function(v) { this._sX = v; this.changed = true; this.trigger('Moved', 'sX', v); }, get: function() { return this._sX; }, configurable:true });
 			Object.defineProperty(this, 'sY', { set: function(v) { this._sY = v; this.changed = true; this.trigger('Moved', 'sY', v); }, get: function() { return this._sY; }, configurable:true });
 			Object.defineProperty(this, 'sZ', { set: function(v) { this._sZ = v; this.changed = true; this.trigger('Moved', 'sZ', v); }, get: function() { return this._sZ; }, configurable:true });
-			Object.defineProperty(this, 'alpha', { set: function(v) { this._alpha = v; this.changed = true; this.trigger('Moved', 'alpha', v); }, get: function() { return this._alpha; }, configurable:true });
+			Object.defineProperty(this, 'w', { set: function(v) { this._w = v; this.changed = true; this.trigger('Moved', 'w', v); }, get: function() { return this._w; }, configurable:true });
+			Object.defineProperty(this, 'l', { set: function(v) { this._l = v; this.changed = true; this.trigger('Moved', 'l', v); }, get: function() { return this._l; }, configurable:true });
+			Object.defineProperty(this, 'h', { set: function(v) { this._h = v; this.changed = true; this.trigger('Moved', 'h', v); }, get: function() { return this._h; }, configurable:true });
+			Object.defineProperty(this, 'alpha', { set: function(v) { this._alpha = v; this.changed = true; }, get: function() { return this._alpha; }, configurable:true });
 		}
 	},
 	
@@ -165,7 +168,21 @@ Crafty.c('3D', {
 		if (this.alpha != this._alpha) {
 			this._alpha = this.alpha;
 			this.changed = true;
-			this.trigger('Moved', 'alpha', this.alpha);
+		}
+		if (this.w != this._w) {
+			this._w = this.w;
+			this.changed = true;
+			this.trigger('Moved', 'w', this.w);
+		}
+		if (this.l != this._l) {
+			this._l = this.l;
+			this.changed = true;
+			this.trigger('Moved', 'l', this.l);
+		}
+		if (this.h != this._h) {
+			this._h = this.h;
+			this.changed = true;
+			this.trigger('Moved', 'h', this.h);
 		}
 		this.trigger('GetChanges');
 	}
