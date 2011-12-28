@@ -43,9 +43,6 @@ Crafty.c('Render', {
 					rd.elem.style.left = (-copy.w/2)+'px';
 					rd.elem.style.width = copy.w+'px';
 					rd.elem.style.height = copy.l+'px';
-					if (this.has('Sprite')) {
-						rd.elem.style.background = "url('" + this.__image + "') no-repeat -" + this.__coord[0] + "px -" + this.__coord[1] + "px";
-					}
 					this.parent.renderElement.appendChild(rd.elem);
 				}
 				
@@ -83,6 +80,10 @@ Crafty.c('Render', {
 					str += i+'('+rd.transforms[i]+')' ;
 				}
 				rd.elem.style.transform = rd.elem.style[Crafty.support.prefix + "Transform"] = str;
+				
+				if (this.has('Sprite')) {
+					rd.elem.style.background = "url('" + this.__image + "') no-repeat -" + this.__coord[0] + "px -" + this.__coord[1] + "px";
+				}
 			}
 			else if (Crafty.support.webgl) {
 				// webgl stuff

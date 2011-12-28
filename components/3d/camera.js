@@ -15,12 +15,13 @@ Crafty.c('Camera', {
 	init: function () {
 		this.requires('3D');
 		this.target = Crafty.e('3D');
-		_transforms = {};
+		this._transforms = {};
 	},
 	
-	Camera: function (type, parent) {
+	Camera: function (name, type, parent) {
 		this.type = type;
 		this.setParent(parent);
+		parent._cameras[name] = this;
 		this.target.setParent(parent);
 		return this;
 	},
@@ -154,10 +155,11 @@ Crafty.c('Camera', {
 						}
 						
 						for (var m in j.val) {
-							j.val[m] =  = j.val[m]+unit;
+							j.val[m] = j.val[m]+unit;
 						}
-						style.push(j.op+'('+(j.val.join(' '))+unit+') ');
+						style.push(j.op+'('+(j.val.join(', '))+')');
 					}
+					console.log(style.join(' '));
 					par.style.transform = par.style[pref+"Transform"] = style.join(' ');
 					
 				}

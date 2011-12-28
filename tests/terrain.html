@@ -2,8 +2,11 @@
 <html>
 <head>
 	<title>Terrain tests</title>
-	<script type="text/javascript" src="http://localhost/crafty/crafty-local.js"></script>
-	<script type="text/javascript" src="../components/terrain.js"></script>
+	<script type="text/javascript" src="http://guneva.net/crafty/live.php"></script>
+	<script type="text/javascript" src="../components/3d/terrain.js"></script>
+	<script type="text/javascript" src="../components/3d/render.js"></script>
+	<script type="text/javascript" src="../components/3d/3d.js"></script>
+	<script type="text/javascript" src="../components/3d/camera.js"></script>
 	<script type="text/javascript">
 		window.onload = function() {
 			Crafty.init();
@@ -13,7 +16,7 @@
 			terr.addFloor(300, 0, 300, 300, 0, 'tank2');
 			terr.addWall(-150, 0, 0, 90, 300, 300, 'tank3');
 			terr.addDoodad(0, 0, 0, 100, 100, 300, 'tank3', false);
-			var cam = Crafty.e('Camera').Camera('3D', terr).attr({x: 800, y: 150, z: 300}).lookAt({x: 0, y: 0, z: 0});
+			var cam = Crafty.e('Camera').Camera('main', '3D', terr).attr({x: 800, y: 150, z: 300}).lookAt({x: 0, y: 0, z: 0});
 			cam.active = true;
 			cam._render();
 		}

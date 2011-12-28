@@ -18,6 +18,7 @@ Crafty.c('Terrain', {
 	_walls: null,
 	_hash: null,
 	_cameras: null,
+	active: null,
 	
 	init: function () {
 		this.requires('3D');
@@ -25,6 +26,7 @@ Crafty.c('Terrain', {
 		this._floors = [];
 		this._walls = [];
 		this._cameras = {};
+		this.active = {};
 	},
 	
 	/**
@@ -140,6 +142,18 @@ Crafty.c('Terrain', {
 		this._objects.push(doodad);
 		return this;
 	},
+	
+	useCamera: function (name) {
+		if (this._cameras[name])
+			for (var i in this._cameras) {
+				this._cameras[i].active = false;
+			}
+			this.active = this._cameras[id];
+			this._cameras[id].active = true;
+		else 
+			throw "No camera with name "+name;
+	},
+	
 });
 
 /**
@@ -207,12 +221,11 @@ Crafty.c("Doodad", {
 		data.rY = 0;
 		
 		var trans = this.parent.transforms.form,
-			reg = /rotateZ\(([-]?[\d\.]*)deg\)/,
-			i, matches;
+			i;
 	
 		for (i in trans) {
-			if (matches = reg.exec(trans[i])) {
-				data.rZ = -1 * Number(matches[1]);
+			if (trans[i].op == 'rotateZ') {
+				data.rZ = -1 * parseInt(trans[i].val[0]);
 				break;
 			}
 		}
