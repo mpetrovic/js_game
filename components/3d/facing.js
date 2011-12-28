@@ -108,10 +108,51 @@ Crafty.c("Facing", {
 		return this;
 	},
 	
-	prerender: function (copy) {
+	prerender: function (data) {
 		// get the parent's Z rotation
 		// get the angle difference
 		// get the sprite to use
 		// flip the entity if necessary
+		data.l = data.h;
+		data.rX = -90;
+		data.rY = 0;
+		
+		var trans = this.parent.transforms.form,
+			i, cam = 0, diff, fs = this._facingSettings,
+			use, avg;
+	
+		for (i in trans) {
+			if (trans[i].op == 'rotateZ') {
+				cam = parseInt(trans[i].val[0]);
+				data.rZ = -1 * cam;
+				break;
+			}
+		}
+		
+		// get a value that's always positive
+		diff = (facing - cam + 360)%360;
+		
+		for (i=0; i<fs.length; i++) {
+			if (fs[i].angle == diff) {
+				use = i;
+			}
+			// only if we loop around
+			if (fs[i].angle > fs[i+1].angle) {
+				fs[i+1].angle += 360;
+			}
+			
+			// the diff is between 2 angles, get the avg, compare and use that one
+			if (fs[i].angle < diff && diff > fs[i+1].angle) {
+				avg = (fs[i].angle + fs[i+1].angle)/2;
+				if (avg > facing) {
+					use = i;
+				}
+				else {
+					use = i+1;
+				}
+			}
+			
+			fs[i+1].angle %= 360;
+		}
 	},
 });
