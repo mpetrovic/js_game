@@ -1,6 +1,7 @@
 Crafty.c("Facing", {
 	_facing: 0,
 	_facingSettings: null,
+	using: 0,
 	changed: true,
 	
 	init: function () {
@@ -21,7 +22,69 @@ Crafty.c("Facing", {
 			}
 		}
 		
-		this.bind("PreRender", this.prerender);
+		this.bind('CameraChanged', function (cam) {
+			if (this.isSibling(cam)) {
+				this.changed = true;
+			}
+		});
+		
+		
+		this.bind("PreRender", function (data) {
+			// get the parent's Z rotation
+			// get the angle difference
+			// get the sprite to use
+			// flip the entity if necessary
+			data.l = data.h;
+			data.rX = -90;
+			data.rY = 0;
+			
+			var trans = this.parent.transforms.form,
+				i, cam = 0, diff, fs = this._facingSettings,
+				use, avg;
+		
+			for (i in trans) {
+				if (trans[i].op == 'rotateZ') {
+					cam = parseInt(trans[i].val[0]);
+					data.rZ = -1 * cam;
+					break;
+				}
+			}
+			
+			// get a value that's always positive
+			diff = (facing - cam + 360)%360;
+			
+			for (i=0; i<fs.length; i++) {
+				if (fs[i].angle == diff) {
+					use = i;
+				}
+				// only if we loop around
+				if (fs[i].angle > fs[i+1].angle) {
+					fs[i+1].angle += 360;
+				}
+				
+				// the diff is between 2 angles, get the avg, compare and use that one
+				if (fs[i].angle < diff && diff > fs[i+1].angle) {
+					avg = (fs[i].angle + fs[i+1].angle)/2;
+					if (avg > facing) {
+						use = i;
+					}
+					else {
+						use = i+1;
+					}
+				}
+				
+				fs[i+1].angle %= 360;
+			}
+			
+			this.removeComponent(fs[using].data);
+			this.addComponent(fs[use].data);
+			if (fs.flip) {
+				copy.sX = Math.abs(copy.sX)*-1;
+			}
+			else {
+				copy.sX = Math.abs(copy.sX);
+			}
+		});
 	},
 	
 	/*
@@ -90,7 +153,7 @@ Crafty.c("Facing", {
 					angle = parseInt(m[1]);
 			}
 			
-			d.push({angle: angle, data: p});
+			d.push({angle: angle, data: p, flip: false});
 		}
 		if (props.flip) {
 			for (i in d) {
@@ -106,53 +169,5 @@ Crafty.c("Facing", {
 		
 		this._facingSettings = d;
 		return this;
-	},
-	
-	prerender: function (data) {
-		// get the parent's Z rotation
-		// get the angle difference
-		// get the sprite to use
-		// flip the entity if necessary
-		data.l = data.h;
-		data.rX = -90;
-		data.rY = 0;
-		
-		var trans = this.parent.transforms.form,
-			i, cam = 0, diff, fs = this._facingSettings,
-			use, avg;
-	
-		for (i in trans) {
-			if (trans[i].op == 'rotateZ') {
-				cam = parseInt(trans[i].val[0]);
-				data.rZ = -1 * cam;
-				break;
-			}
-		}
-		
-		// get a value that's always positive
-		diff = (facing - cam + 360)%360;
-		
-		for (i=0; i<fs.length; i++) {
-			if (fs[i].angle == diff) {
-				use = i;
-			}
-			// only if we loop around
-			if (fs[i].angle > fs[i+1].angle) {
-				fs[i+1].angle += 360;
-			}
-			
-			// the diff is between 2 angles, get the avg, compare and use that one
-			if (fs[i].angle < diff && diff > fs[i+1].angle) {
-				avg = (fs[i].angle + fs[i+1].angle)/2;
-				if (avg > facing) {
-					use = i;
-				}
-				else {
-					use = i+1;
-				}
-			}
-			
-			fs[i+1].angle %= 360;
-		}
-	},
+	}
 });

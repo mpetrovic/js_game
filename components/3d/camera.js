@@ -113,6 +113,7 @@ Crafty.c('Camera', {
 		if (!this.active) return;
 		
 		if (this.changed) {
+			Crafty.trigger('CameraChanged', this);
 			if (this.type == '3D') {
 				if (Crafty.support.css3dtransform) {
 					var par = this.parent.renderElement, pref = Crafty.support.prefix, 

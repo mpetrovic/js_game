@@ -212,24 +212,28 @@ Crafty.c('Collides', {
  */
 Crafty.c("Doodad", {
 	init: function () {
-		this.bind('PreRender', this._prerender);
-	},
-
-	_prerender: function (data) {
-		data.l = data.h;
-		data.rX = -90;
-		data.rY = 0;
+		this.bind('PreRender', function (data) {
+			data.l = data.h;
+			data.rX = -90;
+			data.rY = 0;
+			
+			var trans = this.parent.transforms.form,
+				i;
 		
-		var trans = this.parent.transforms.form,
-			i;
-	
-		for (i in trans) {
-			if (trans[i].op == 'rotateZ') {
-				data.rZ = -1 * parseInt(trans[i].val[0]);
-				break;
+			for (i in trans) {
+				if (trans[i].op == 'rotateZ') {
+					data.rZ = -1 * parseInt(trans[i].val[0]);
+					break;
+				}
 			}
-		}
-	},
+		});
+		
+		this.bind('CameraChanged', function (cam) {
+			if (this.isSibling(cam)) {
+				this.changed = true;
+			}
+		});
+	}
 });
 
 /**
@@ -239,7 +243,7 @@ Crafty.c("Doodad", {
 */
 (function(parent) {
 
-HashMap = function(cell) {
+var HashMap = function(cell) {
 		this.cellsize = cell || 64;
 		this.map = {};
 	},
@@ -277,10 +281,11 @@ HashMap.prototype = {
 			
 			if(filter === undefined) filter = true; //default filter to true
 		
-		//search in all x buckets
+		// search in all x buckets
 		for(x=keys.x1;x<=keys.x2;x++) {
-			//insert into all y buckets
+			// search in all z buckets
 			for(y=keys.y1;y<=keys.y2;y++) {
+				// search in all z buckets
 				for (z=keys.z1;z<=keys.z2;z++) {
 					hash =  x + SPACE + y + SPACE + z;
 					
@@ -341,14 +346,15 @@ HashMap.prototype = {
 	},
 	
 	boundaries: function() {
+		// i dont know what use this has in a 3D context, but w/e
 		var k, ent,
 			hash = {
-				max: {x: -Infinity, y: -Infinity},
-				min: {x: Infinity, y: Infinity},
+				max: {x: -Infinity, y: -Infinity, z: -Infinity},
+				min: {x: Infinity, y: Infinity, z: Infinity},
 			}
 			coords = {
-				max: {x: -Infinity, y: -Infinity},
-				min: {x: Infinity, y: Infinity},
+				max: {x: -Infinity, y: -Infinity, z: -Infinity},
+				min: {x: Infinity, y: Infinity, z: Infinity},
 			};
 			
 		for (var h in this.map) {
@@ -373,7 +379,7 @@ HashMap.prototype = {
 				hash.max.y = coord[1];
 				for (k in this.map[h]) {
 					ent = this.map[h][k];
-					coords.max.y = Math.max(coords.max.y, ent.y + ent.h);
+					coords.max.y = Math.max(coords.max.y, ent.y + ent.l);
 				}
 			}
 			if (coord[1] <= hash.min.y) {
@@ -383,13 +389,21 @@ HashMap.prototype = {
 					coords.min.y = Math.min(coords.min.y, ent.y);
 				}
 			}
+			if (coord[2] >= hash.max.z) {
+				hash.max.z = coord[2];
+				for (k in this.map[h]) {
+					ent = this.map[h][k];
+					coords.max.z = Math.max(coords.max.z, ent.z + ent.h);
+				}
+			}
+			if (coord[2] <= hash.min.z) {
+				hash.min.z = coord[2];
+				for (k in this.map[h]) {
+					ent = this.map[h][k];
+					coords.min.z = Math.min(coords.min.z, ent.z);
+				}
+			}
 		}
-			// At least the entire viewport should be inside boundary box 
-			//(else _clamp will fail when the entities does not take up entire viewport)
-		coords.min.x = Math.min(0, coords.min.x);
-		coords.min.y = Math.min(0, coords.min.y);
-		coords.max.x = Math.max(Crafty.viewport.width, coords.max.x);
-		coords.max.y = Math.max(Crafty.viewport.height, coords.max.y);
 		
 		return coords;
 	},

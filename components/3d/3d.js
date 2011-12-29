@@ -105,6 +105,17 @@ Crafty.c('3D', {
 	},
 	
 	/**
+	 #.isSibling
+	 @comp 3D
+	 @sign public this.isSibling(Entity sib)
+	 @param Entity sibling - Entity to test against
+	 * Returns true if this and the given entity have the same parent
+	 */
+	isSibling: function (sib) {
+		return 'parent' in sib && this.parent == sib.parent;
+	},
+	
+	/**
 	 #.transformRelativeToSelf
 	 @comp 3D
 	 @sign public this.transformRelativeToSelf(Object transforms)
