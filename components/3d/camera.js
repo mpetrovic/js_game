@@ -160,7 +160,6 @@ Crafty.c('Camera', {
 						}
 						style.push(j.op+'('+(j.val.join(', '))+')');
 					}
-					console.log(style.join(' '));
 					par.style.transform = par.style[pref+"Transform"] = style.join(' ');
 					
 				}
