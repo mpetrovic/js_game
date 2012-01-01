@@ -22,14 +22,14 @@ Crafty.c("Facing", {
 			});
 		}
 		
-		this.bind('CameraChanged', function (cam) {
+		this.bind('CameraChanged', function camChange (cam) {
 			if (this.isSibling(cam)) {
 				this.changed = true;
 			}
 		});
 		
 		
-		this.bind("PreRender", function (data) {
+		this.bind("PreRender", function preRender (data) {
 			// get the parent's Z rotation
 			// get the angle difference
 			// get the sprite to use
@@ -91,6 +91,14 @@ Crafty.c("Facing", {
 				else {
 					data.sX = Math.abs(data.sX);
 				}
+			}
+		});
+		
+		this.bind('RemoveComponent', function (c) {
+			if (c == 'Facing') {
+				this.unbind('CameraChanged', camChanged);
+				this.unbind('PreRender', preRender);
+				this.unbind('RemoveComponent', arguments.callee);
 			}
 		});
 	},
