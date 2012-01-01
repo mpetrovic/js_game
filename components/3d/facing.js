@@ -19,7 +19,7 @@ Crafty.c("Facing", {
 					this._facing = this.facing;
 					this.changed = true;
 				}
-			}
+			});
 		}
 		
 		this.bind('CameraChanged', function (cam) {
@@ -39,8 +39,8 @@ Crafty.c("Facing", {
 			data.rY = 0;
 			
 			var trans = this.parent.transforms.form,
-				i, cam = 0, diff, fs = this._facingSettings,
-				use, avg;
+				i, cam = 0, diff, fs = this._facingSettings.slice(0),
+				use, avg, l = fs.length;
 		
 			for (i in trans) {
 				if (trans[i].op == 'rotateZ') {
@@ -51,38 +51,47 @@ Crafty.c("Facing", {
 			}
 			
 			// get a value that's always positive
-			diff = (facing - cam + 360)%360;
+			diff = (this._facing + cam + 360)%360;
 			
-			for (i=0; i<fs.length; i++) {
+			for (i=0; i<l; i++) {
 				if (fs[i].angle == diff) {
 					use = i;
 				}
 				// only if we loop around
-				if (fs[i].angle > fs[i+1].angle) {
+				if (!(i+1 in fs)) {
+					fs[i+1] = {angle: fs[0].angle+360, data: fs[0].data};
+				}
+				else if (fs[i].angle > fs[i+1].angle) {
 					fs[i+1].angle += 360;
 				}
 				
 				// the diff is between 2 angles, get the avg, compare and use that one
-				if (fs[i].angle < diff && diff > fs[i+1].angle) {
+				if (fs[i].angle < diff && diff < fs[i+1].angle) {
 					avg = (fs[i].angle + fs[i+1].angle)/2;
-					if (avg > facing) {
+					if (avg > diff) {
 						use = i;
 					}
 					else {
 						use = i+1;
 					}
+					break;
 				}
-				
 				fs[i+1].angle %= 360;
 			}
 			
-			this.removeComponent(fs[using].data);
-			this.addComponent(fs[use].data);
-			if (fs.flip) {
-				copy.sX = Math.abs(copy.sX)*-1;
-			}
-			else {
-				copy.sX = Math.abs(copy.sX);
+			use %= l;
+			console.log(use+": "+avg+" "+diff);
+			
+			if (this.using != use) {
+				this.removeComponent(fs[this.using].data);
+				this.addComponent(fs[use].data);
+				this.using = use;
+				if (fs[use].flip) {
+					data.sX = Math.abs(data.sX)*-1;
+				}
+				else {
+					data.sX = Math.abs(data.sX);
+				}
 			}
 		});
 	},
@@ -96,7 +105,7 @@ Crafty.c("Facing", {
 	 * 		right
 	 *		towards
 	 *		flip
-	 *		and combinations of the above, delimited with " ". These map to cardinal directions.
+	 *		and combinations of the above, delimited with "_". These map to cardinal directions.
 	 * custom angles can be given with 'deg{angle}' syntax. IE. deg90
 	 * using flip will tell the entity to render the opposite of the given horizontal axis
 	 * that made no sense, so here's an example
@@ -120,29 +129,29 @@ Crafty.c("Facing", {
 				case 'away':
 					angle = 0;
 					break;
-				case 'away right':
-				case 'right away':
+				case 'away_right':
+				case 'right_away':
 					angle = 45;
 					break;
 				case 'right':
 					angle = 90;
 					break;
-				case 'towards right':
-				case 'right towards':
+				case 'towards_right':
+				case 'right_towards':
 					angle = 135;
 					break;
 				case 'towards':
 					angle = 180;
 					break;
-				case 'towards left':
-				case 'left towards':
+				case 'towards_left':
+				case 'left_towards':
 					angle = 225;
 					break;
 				case 'left':
 					angle = 270;
 					break;
-				case 'away left':
-				case 'left away':
+				case 'away_left':
+				case 'left_away':
 					angle = 315;
 					break;
 				case 'flip':
