@@ -144,12 +144,13 @@ Crafty.c('Terrain', {
 	},
 	
 	useCamera: function (name) {
-		if (this._cameras[name])
+		if (this._cameras[name]) {
 			for (var i in this._cameras) {
 				this._cameras[i].active = false;
 			}
 			this.active = this._cameras[id];
 			this._cameras[id].active = true;
+		}
 		else 
 			throw "No camera with name "+name;
 	},
