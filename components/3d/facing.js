@@ -80,7 +80,6 @@ Crafty.c("Facing", {
 			}
 			
 			use %= l;
-			console.log(use+": "+avg+" "+diff);
 			
 			if (this.using != use) {
 				this.removeComponent(fs[this.using].data);
