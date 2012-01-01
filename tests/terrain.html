@@ -6,19 +6,46 @@
 	<script type="text/javascript" src="../components/3d/terrain.js"></script>
 	<script type="text/javascript" src="../components/3d/render.js"></script>
 	<script type="text/javascript" src="../components/3d/3d.js"></script>
+	<script type="text/javascript" src="../components/3d/facing.js"></script>
 	<script type="text/javascript" src="../components/3d/camera.js"></script>
 	<script type="text/javascript">
 		window.onload = function() {
 			Crafty.init();
 			Crafty.sprite(150, 150, '../images/walker_tank_05.jpg', {tank1: [0, 0], tank2: [1, 0], tank3: [2, 0]});
+			Crafty.sprite(640, 480, '../images/virus_insect_scythe/000.png', {insect000: [0, 0]});
+			Crafty.sprite(640, 480, '../images/virus_insect_scythe/045.png', {insect045: [0, 0]});
+			Crafty.sprite(640, 480, '../images/virus_insect_scythe/090.png', {insect090: [0, 0]});
+			Crafty.sprite(640, 480, '../images/virus_insect_scythe/135.png', {insect135: [0, 0]});
+			Crafty.sprite(640, 480, '../images/virus_insect_scythe/180.png', {insect180: [0, 0]});
+			Crafty.sprite(640, 480, '../images/virus_insect_scythe/225.png', {insect225: [0, 0]});
+			Crafty.sprite(640, 480, '../images/virus_insect_scythe/270.png', {insect270: [0, 0]});
+			Crafty.sprite(640, 480, '../images/virus_insect_scythe/315.png', {insect315: [0, 0]});
 			terr = Crafty.e('Terrain');
 			terr.addFloor(0, 0, 300, 300, 0, 'tank1');
 			terr.addFloor(300, 0, 300, 300, 0, 'tank2');
 			terr.addWall(-150, 0, 0, 90, 300, 300, 'tank3');
 			terr.addDoodad(0, 0, 0, 100, 100, 300, 'tank3', false);
-			var cam = Crafty.e('Camera').Camera('main', '3D', terr).attr({x: 800, y: 150, z: 300}).lookAt({x: 0, y: 0, z: 0});
+			var face = Crafty.e('3D, Facing, Render, Tween').Facing({
+				away: 'insect000',
+				away_right: 'insect045',
+				right: 'insect090',
+				towards_right: 'insect135',
+				towards: 'insect180',
+				towards_left: 'insect225',
+				left: 'insect270',
+				away_left: 'insect315',
+			}).attr({
+				w: 640,
+				h: 480
+			}).tween({facing: 360}, 750);
+			face.facing = 0;
+			terr.addObject(face, 300, 0, 0);
+			var cam = Crafty.e('Camera').Camera('main', '3D', terr).attr({x: 150, y: -500, z: 300}).lookAt({x: 0, y: 0, z: 0});
 			cam.active = true;
 			cam._render();
+			cam.bind('EnterFrame', function () {
+				this._render();
+			});
 		}
 	</script>
 </head>
