@@ -81,7 +81,7 @@
 			for (i=0; i<st.length; i++) {
 				st.call(this);
 			}
-			this.bind("enterframe", this.enterFrame);
+			this.bind("EnterFrame", this.enterFrame);
 			this.bind("KeyDown", this.keyPress);
 			this.bind('StartSinging', this.songStart);
 			this.bind('ReleaseSong', this.releaseSong);
@@ -90,7 +90,7 @@
 		},
 		
 		endCombat: function() {
-			this.unbind("enterframe", this.enterFrame);
+			this.unbind("EnterFrame", this.enterFrame);
 			this.unbind("KeyDown", this.keyPress);
 			this.unbind('StartSinging', this.songStart);
 			this.unbind('ReleaseSong', this.releaseSong);
@@ -98,7 +98,9 @@
 		},
 		
 		songStart: function(song) {
-			var old_song = this._currentSong, reyv1 = this._allyPositions[3], reyv2 = this._allyPositions[4];
+			var old_song = this._currentSong, 
+				reyv1 = this._allyPositions[3], 
+				reyv2 = this._allyPositions[4];
 		
 			this._currentSong = song;
 			this._currentSong.attr({

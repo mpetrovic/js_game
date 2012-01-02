@@ -1,8 +1,8 @@
-(function(Crafty, window, document) {
+(function(Crafty) {
 	var data = {};
 	var queue = [];
 	
-	var xml = new XMLHTTPRequest();
+	var xml = new XMLHttpRequest();
 		
 	function process(type, id, data) {
 		// process xml call
@@ -16,6 +16,7 @@
 		externalURL: '',
 		
 		prepare: function(type, id, force) {
+			if (!data[type]) data[type] = {};
 			if (data[type][id]) return;
 			
 			queue.push('req[][type]='+type+'&req[][id]='+id);
@@ -60,15 +61,15 @@
 		// ie8+ only. if you're using ie7 or below, i don't care
 		if (!xml || !queue.length) return;
 		
-		var url = Crafty.externalURL;
+		var url = Crafty.data.externalURL;
 		
-		xml.open("POST", this.externalURL, !force);
+		xml.open("POST", url, !force);
 		xml.onreadystatechange = function() {
 			if (xml.readyState != 4) return;
-			if (xml.status != 200 && xml.status != 302) {
+			if (xml.status == 200 || xml.status == 302) {
+				process(type, id, eval('('+xml.transportText+')'));
+				queue = [];
 			}
-			process(type, id, eval('('+xml.transportText+')'));
-			queue = [];
 		};
 		xml.ontimeout = function () {
 			getData();
@@ -80,4 +81,4 @@
 	}
 	
 	var dataLoad = window.setInterval(getData, 5000);
-});
+})(Crafty);

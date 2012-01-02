@@ -1,4 +1,3 @@
-(function (Crafty, window, document) {
 Crafty.c("Cutscene", {
 	_lines: null,
 	_linesCurrent: 0,
@@ -21,10 +20,16 @@ Crafty.c("Cutscene", {
 	},
 	
 	_executeLine: function(line) {
+		if (typeof this._lines[line] != 'undefined') {
+			this._linesCurrent = line;
+			this._lines[line].play();
+		}
 	},
 	
 	lineEnd: function() {
-		var lc, lines = this._linesCurrent++, this._lines;
+		var lc = this._linesCurrent++, 
+			lines = this._lines;
+			
 		if (lines[lc])
 			lines[lc].play();
 		else {
@@ -69,4 +74,3 @@ Crafty.c("SceneLine", {
 	end: function() {
 	},
 });
-})(Crafty, window, window.document);

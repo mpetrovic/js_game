@@ -18,8 +18,9 @@ window.onload = function() {
 		Crafty.data.prepare('combat', 'combat.berix');
 		Crafty.data.prepare('combat', 'combat.ceyna');
 		Crafty.data.prepare('combat', 'combat.hara');
-		Crafty.data.prepare('combat', 'combat.kid');
-		Crafty.data.prepare('combat', 'combat.nerd');
+		Crafty.data.prepare('combat', 'combat.stacca');
+		Crafty.data.prepare('combat', 'combat.forst');
+		Crafty.data.prepare('scene', 'phase01.000');
 	});
 	
 	Crafty.view('gameMenu', {
@@ -42,10 +43,10 @@ window.onload = function() {
 			menus += "		<li id=\"extras\">Extras</li>\r\n";
 			menus += "	</ul>";
 			
-			Crafty.e("HTML Mouse")
+			Crafty.e("HTML, Mouse")
 				  .replace(menus)
 				  .attr(start)
-				  .attr(_element: this._element)
+				  .attr({_element: this._element})
 				  .bind('Click', function (e) {
 					switch (e.target.id) {
 						case 'continue':
