@@ -16,6 +16,15 @@ Crafty.c('Collides', {
 		if (this.has('3D') && this.parent) {
 			// check the parent's HashMap then check against individual entities for collision
 			
+			// get all applicable entities
+			var poss = this.parent._map.search(this), 
+				i;
+				
+			// check each entity for collision
+			for (i in poss) {
+				// haha, what?
+			}
+			
 			if (collide) {
 				this.trigger('Collide', collide, SAT);
 				collide.trigger('Collide', this, SAT);
