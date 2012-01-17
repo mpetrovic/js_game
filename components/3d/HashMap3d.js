@@ -15,7 +15,7 @@ var HashMap = function(cell) {
 
 HashMap.prototype = {
 	insert: function(obj) {
-		var keys = HashMap.key(obj),
+		var keys = this.key(obj),
 			entry = new Entry(keys,obj,this),
 			x = 0,
 			y, z,
@@ -173,16 +173,16 @@ HashMap.prototype = {
 	},
 };
 
-HashMap.key = function(obj) {
+HashMap.prototype.key = function(obj) {
 	if (obj.hasOwnProperty('mbr')) {
 		obj = obj.mbr();
 	}
-	var x1 = Math.floor(obj._x / cellsize),
-		y1 = Math.floor(obj._y / cellsize),
-		z1 = Math.floor(obj._z / cellsize),
-		x2 = Math.floor((obj._w + obj._x) / cellsize),
-		y2 = Math.floor((obj._l + obj._y) / cellsize);
-		z2 = Math.floor((obj._h + obj._z) / cellsize);
+	var x1 = Math.floor(obj._x / this.cellsize),
+		y1 = Math.floor(obj._y / this.cellsize),
+		z1 = Math.floor(obj._z / this.cellsize),
+		x2 = Math.floor((obj._w + obj._x) / this.cellsize),
+		y2 = Math.floor((obj._l + obj._y) / this.cellsize);
+		z2 = Math.floor((obj._h + obj._z) / this.cellsize);
 	return {x1: x1, y1: y1, z1: z1, x2: x2, y2: y2, z2: z2};
 };
 
