@@ -27,6 +27,7 @@ Crafty.c('Terrain', {
 		this._walls = [];
 		this._cameras = {};
 		this.active = {};
+		this._map = new Crafty.HashMap3d();
 	},
 	
 	/**
