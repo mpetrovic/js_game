@@ -126,6 +126,18 @@ Crafty.c('3D', {
 	transformRelativeToSelf: function (transforms) {
 	},
 	
+	/**
+	 #.getOBB
+	 @comp 3D
+	 @sign public this.getOBB()
+	 * Returns an array of points representing the smallest box that can contain the entire object.
+	 * The points returned are relative to the world coord system
+	 */
+	getOBB: function () {
+		if (WebKitCSSMatrix) {
+		}
+	},
+	
 	// checks for changes in the object
 	// to be run before PreRender
 	_getChanges: function () {
