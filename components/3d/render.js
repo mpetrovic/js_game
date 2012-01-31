@@ -1,14 +1,49 @@
-
-
-/**
+/**@
  #Render
  @category 3D
  * Marks an entity to be rendered.
  * All others should not be rendered at all.
  */
 Crafty.c('Render', {
+	/**@
+	 #.faces
+	 * An array of all the 'faces' that make up the object
+	 * Faces are rectangles. CSS doesn't support anything else, so neither will I.
+	 * A single face consists of a start position, dimensions and rotations.
+	 * For most cases, these will be static for the duration of the game.
+	 * Example:
+	 * ~~~~~~~~~~~~~~~~
+	 * faces = [
+		{
+			x:0,
+			y:0,
+			z:0,
+			w:0,
+			l:0,
+			h:0,
+			rX:0,
+			rY:0,
+			rZ:0
+			sprite: 'sprite',
+			changed: true
+		}
+	 * ]
+	 */
+	faces: null,
 	_renderData: null,
+	
+	/**@
+	 #.changed
+	 * Boolean value
+	 * Should be true if any property that affects how the entity directly is rendered changes
+	 * For instance, position, rotation, etc.
+	 * Should be false if its parent changes, but not it.
+	 */
 	changed: true,
+	
+	init: function () {
+		this.faces = [];
+	}
 	
 	render: function (method) {
 	
@@ -35,15 +70,26 @@ Crafty.c('Render', {
 				// doodad transforms:
 				//		position comes from object
 				//		rotation comes from camera
-				var rd = this._renderData = this._renderData || {elem: null, transforms:{}};
-				if (rd.elem == null) {
-					rd.elem = document.createElement('div');
-					rd.elem.style.position = 'absolute';
-					rd.elem.style.top = (-copy.l/2)+'px';
-					rd.elem.style.left = (-copy.w/2)+'px';
-					rd.elem.style.width = copy.w+'px';
-					rd.elem.style.height = copy.l+'px';
-					this.parent.renderElement.appendChild(rd.elem);
+				var rd = this._renderData = this._renderData || {container: null, transforms:{}, faces: []};
+				if (rd.container == null) {
+					rd.container = document.createElement('div');
+					rd.container.style.position = 'absolute';
+					rd.container.style.top = (-copy.l/2)+'px';
+					rd.container.style.left = (-copy.w/2)+'px';
+					this.parent.renderElement.appendChild(rd.container);
+				}
+				for (var i=0,l=this.faces.length; i<l; i++) {
+					var fc, face = this.faces[i];
+					if (!face.changed) continue;
+					if (typeof rd.faces[i] == 'undefined') {
+						fc = rd.faces[i] = document.createElement('div');
+						fc.style.position = 'absolute';
+					}
+					else {
+						fc = rd.faces[i];
+					}
+					fc.style.top = (-face.l/2)+'px';
+					fc.style.left + (-face.w/2)+'px';
 				}
 				
 				// calculate the transforms and put them in the transform object
@@ -79,7 +125,7 @@ Crafty.c('Render', {
 				for (var i in rd.transforms) {
 					str += i+'('+rd.transforms[i]+')' ;
 				}
-				rd.elem.style.transform = rd.elem.style[Crafty.support.prefix + "Transform"] = str;
+				rd.container.style.transform = rd.container.style[Crafty.support.prefix + "Transform"] = str;
 				
 				if (this.has('Sprite')) {
 					rd.elem.style.background = "url('" + this.__image + "') no-repeat -" + this.__coord[0] + "px -" + this.__coord[1] + "px";
@@ -88,6 +134,15 @@ Crafty.c('Render', {
 			else if (Crafty.support.webgl) {
 				// webgl stuff
 				// i have no idea what goes here
+			}
+			else if (Crafty.support.svg) {
+				
+			}
+			else if (Crafty.support.vml) {
+				
+			}
+			else {
+				method = overhead;
 			}
 		}
 		else if (method == 'isometric') {
