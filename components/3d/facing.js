@@ -112,7 +112,7 @@ Crafty.c("Facing", {
 	 * 		right
 	 *		towards
 	 *		flip
-	 *		and combinations of the above, delimited with "_". These map to cardinal directions.
+	 *		and combinations of the above, delimited with "_". These map to cardinal and ordinal directions.
 	 * custom angles can be given with 'deg{angle}' syntax. IE. deg90
 	 * using flip will tell the entity to render the opposite of the given horizontal axis
 	 * that made no sense, so here's an example
