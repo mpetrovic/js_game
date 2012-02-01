@@ -20,9 +20,7 @@ Crafty.c('Render', {
 			z:0,
 			w:0,
 			l:0,
-			h:0,
 			rX:0,
-			rY:0,
 			rZ:0
 			sprite: 'sprite',
 			changed: true
@@ -79,17 +77,25 @@ Crafty.c('Render', {
 					this.parent.renderElement.appendChild(rd.container);
 				}
 				for (var i=0,l=this.faces.length; i<l; i++) {
-					var fc, face = this.faces[i];
+					var fc, face = this.faces[i], spr;
 					if (!face.changed) continue;
 					if (typeof rd.faces[i] == 'undefined') {
 						fc = rd.faces[i] = document.createElement('div');
 						fc.style.position = 'absolute';
+						rd.container.appendChild(fc);
 					}
 					else {
 						fc = rd.faces[i];
 					}
 					fc.style.top = (-face.l/2)+'px';
-					fc.style.left + (-face.w/2)+'px';
+					fc.style.left = (-face.w/2)+'px';
+					fc.style.width = face.w+'px';
+					fc.style.height = face.l+'px';
+					fc.style.transform = fc.style[Crafty.support.prefix+"Transform"] = "translate3d("+face.x+"px, "+face.y+"px, "+face.z+") rotateZ("+face.rZ+") rotateX("+face.rX+")";
+					
+					spr = fc.sprite = Crafty.e(face.sprite);
+				
+					fc.style.background = "url('" + spr.__image + "') no-repeat -" + spr.__coord[0] + "px -" + spr.__coord[1] + "px";
 				}
 				
 				// calculate the transforms and put them in the transform object
@@ -126,10 +132,6 @@ Crafty.c('Render', {
 					str += i+'('+rd.transforms[i]+')' ;
 				}
 				rd.container.style.transform = rd.container.style[Crafty.support.prefix + "Transform"] = str;
-				
-				if (this.has('Sprite')) {
-					rd.elem.style.background = "url('" + this.__image + "') no-repeat -" + this.__coord[0] + "px -" + this.__coord[1] + "px";
-				}
 			}
 			else if (Crafty.support.webgl) {
 				// webgl stuff

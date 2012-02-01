@@ -61,10 +61,13 @@ Crafty.c('Camera', {
 	orbit: function (deg, on_x) {
 		var v = this.sub(this.target),
 			rad = Math.sqrt(on_x?v.z*v.z + v.y*v.y + v.x*v.x:v.x*v.x + v.y*v.y),
-			theta = Crafty.math.degToRad(Crafty.math.radToDeg(Math.atan2(-v.x, -v.y)) + deg);
+			th_old = Crafty.math.radToDeg(Math.atan2(-v.x, -v.y)),
+			theta = Crafty.math.degToRad(th_old + deg);
+			console.log(th_old);
 		
-		this.x = rad * Math.cos(theta) + this.target.x;
-		this.y = rad * Math.sin(theta) + this.target.y;
+		this.x = this.target.x + (rad * Math.cos(theta));
+		this.y = this.target.y + (rad * Math.sin(theta));
+		console.log(this.x+' '+this.y);
 	},
 	
 	/**

@@ -92,7 +92,18 @@ Crafty.c('Terrain', {
 			y: y,
 			w: w,
 			l: l,
-			z: z
+			z: z,
+			faces: [
+				{
+					x: x,
+					y: y,
+					w: w,
+					l: l,
+					z: z,
+					sprite: texture,
+					changed: true,
+				}
+			]
 		});
 		this._objects.push(floor);
 		this._map.insert(floor);
