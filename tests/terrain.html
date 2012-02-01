@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>Terrain tests</title>
-	<script type="text/javascript" src="http://guneva.net/crafty/live.php"></script>
+	<script type="text/javascript" src="http://craftyjs.com/release/0.4.5/crafty.js"></script>
 	<script type="text/javascript" src="../components/3d/terrain.js"></script>
 	<script type="text/javascript" src="../components/3d/render.js"></script>
 	<script type="text/javascript" src="../components/3d/3d.js"></script>
@@ -45,8 +45,10 @@
 			cam.active = true;
 			cam._render();
 			cam.bind('EnterFrame', function () {
-				this._render();
+				// ensures this runs AFTER enterframe
+				setTimeout(function () { cam._render(); },1);
 			});
+			setTimeout(function() { cam.orbit(90); }, 5000);
 		}
 	</script>
 </head>

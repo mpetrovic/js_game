@@ -52,6 +52,22 @@ Crafty.c('Camera', {
 	},
 	
 	/**
+	 #.orbit
+	 @comp Camera
+	 @sign public this.orbit(deg, on_x)
+	 @param int deg			The degree to rotate by
+	 @param boolean on_x	Whether to orbit around x axis or not.
+	 */
+	orbit: function (deg, on_x) {
+		var v = this.sub(this.target),
+			rad = Math.sqrt(on_x?v.z*v.z + v.y*v.y + v.x*v.x:v.x*v.x + v.y*v.y),
+			theta = Crafty.math.degToRad(Crafty.math.radToDeg(Math.atan2(-v.x, -v.y)) + deg);
+		
+		this.x = rad * Math.cos(theta) + this.target.x;
+		this.y = rad * Math.sin(theta) + this.target.y;
+	},
+	
+	/**
 	 * Gets all the objects in the field of view of this camera. All other objects will not be updated.
 	 * Calculate a set of vectors that create the FOV box, then find all objects that intersect the box
 	 * The box will be a pyramid with a nexus of the camera's location, centered on the target. 

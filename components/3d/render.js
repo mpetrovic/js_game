@@ -43,7 +43,7 @@ Crafty.c('Render', {
 	
 	init: function () {
 		this.faces = [];
-	}
+	},
 	
 	render: function (method) {
 	
