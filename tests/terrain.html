@@ -41,14 +41,14 @@
 			}).tween({facing: 360}, 750);
 			face.facing = 0;
 			terr.addObject(face, 300, 0, 0);
-			var cam = Crafty.e('Camera').Camera('main', '3D', terr).attr({x: 150, y: -500, z: 300}).lookAt({x: 0, y: 0, z: 0});
+			var cam = Crafty.e('Camera').Camera('main', '3D', terr).attr({x: 150, y: -500, z: 300}).lookAt({x: 0, y: -150, z: 0});
 			cam.active = true;
 			cam._render();
 			cam.bind('EnterFrame', function () {
 				// ensures this runs AFTER enterframe
+				cam.orbit(1);
 				setTimeout(function () { cam._render(); },1);
 			});
-			setInterval(function() { cam.orbit(1); }, 30);
 		}
 	</script>
 </head>
