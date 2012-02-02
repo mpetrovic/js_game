@@ -99,7 +99,6 @@ Crafty.c('Terrain', {
 					y: y,
 					w: w,
 					l: l,
-					z: z,
 					sprite: texture,
 					changed: true,
 				}
@@ -137,6 +136,17 @@ Crafty.c('Terrain', {
 			z: z,
 			rZ: facing,
 			rX: -90,
+			faces: [
+				{
+					x: x,
+					y: y,
+					w: w,
+					l: h,
+					z: h/2,
+					sprite: texture,
+					changed: true,
+				}
+			]
 		});
 		this._objects.push(wall);
 		this._map.insert(wall);
